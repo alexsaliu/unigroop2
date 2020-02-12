@@ -1,0 +1,21 @@
+.grid-container {
+    display: flex;
+    justify-content: center;
+    align-content: baseline;
+    height: 80vh;
+}
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    width: 90%;
+    height: 80vh;
+    align-content: baseline;
+}
+
+.timeslot {
+    background: #e6e6e6;
+    height: 16px;
+    width: 12%;
+    margin: 1%;
+    border-radius: 20px;
+}
