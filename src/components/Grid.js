@@ -1,16 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './grid.css';
 import Timeslot from './Timeslot.js';
 
 const Grid = () => {
-    const [timeSlots, setTimeSlots] = useState(98);
+    const [timeSlots, setTimeSlots] = useState(['0', '0']);
+    const [ok, setOk] = useState([]);
+
+    useEffect(() => {
+        renderGrid();
+    }, [])
 
     const renderGrid = () => {
-        const grid = [];
+        let t = []
         for (let i = 0; i < 168; i++) {
-            grid.push(<Timeslot />);
+            setTimeout(() => {
+                setTimeSlots(ok.push(0));
+                // setOk(ok => [...ok, 0]);
+                console.log("OK", ok);
+            }, 10 * i)
         }
-        return grid;
     }
 
     return (
@@ -19,7 +27,7 @@ const Grid = () => {
 
             </div>
             <div className="grid">
-                {renderGrid()}
+                {ok.map((item, i) =>  <Timeslot key={i} /> )}
             </div>
         </div>
     );
