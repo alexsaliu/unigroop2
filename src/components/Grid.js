@@ -3,22 +3,55 @@ import './grid.css';
 import Timeslot from './Timeslot.js';
 
 const Grid = () => {
-    const [timeSlots, setTimeSlots] = useState(['0', '0']);
-    const [ok, setOk] = useState([]);
+    // const [timeSlots, setTimeSlots] = useState(['0', '0']);
+    const [timeSlots, setTimeSlots] = useState([]);
 
     useEffect(() => {
-        renderGrid();
+        // fetch('http://localhost:3001/group-info', {
+        //     method: 'POST',
+        //     headers: {
+        //       'Content-Type': 'application/json',
+        //     },
+        //     body: {"link": "hi"}
+        // })
+        // .then(function(res){ return res.json(); })
+        // .then(function(data){ alert( JSON.stringify( data ) ) })
+        let path = window.location.pathname;
+        path = path.split('/')[1]
+        fetch('http://localhost:3001/group-info', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({"link": path})
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+          if (!data.success) {
+              window.location = '/';
+          }
+          else {
+              renderGrid();
+          }
+        })
+        .catch((err) => console.log("Error: ", err))
     }, [])
 
     const renderGrid = () => {
         let t = []
         for (let i = 0; i < 168; i++) {
             setTimeout(() => {
-                setTimeSlots(ok.push(0));
-                // setOk(ok => [...ok, 0]);
-                console.log("OK", ok);
+                setTimeSlots(timeSlots => [...timeSlots, 0]);
+                // console.log("OK", timeSlots);
             }, 10 * i)
         }
+    }
+
+    const selectTime = (index) => {
+        let availability = timeSlots;
+        availability[index] = !availability[index];
+        setTimeSlots(availability);
     }
 
     return (
@@ -27,7 +60,7 @@ const Grid = () => {
 
             </div>
             <div className="grid">
-                {ok.map((item, i) =>  <Timeslot key={i} /> )}
+                {timeSlots.map((item, i) =>  <Timeslot key={i} index={i} selectTime={selectTime} /> )}
             </div>
         </div>
     );
