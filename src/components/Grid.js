@@ -7,18 +7,9 @@ const Grid = () => {
     const [timeSlots, setTimeSlots] = useState([]);
 
     useEffect(() => {
-        // fetch('http://localhost:3001/group-info', {
-        //     method: 'POST',
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //     body: {"link": "hi"}
-        // })
-        // .then(function(res){ return res.json(); })
-        // .then(function(data){ alert( JSON.stringify( data ) ) })
         let path = window.location.pathname;
         path = path.split('/')[1]
-        fetch('http://localhost:3001/group-info', {
+        fetch('http://localhost:3001/check-group', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
