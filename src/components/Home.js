@@ -1,6 +1,11 @@
 import React, {useState, useEffect} from 'react';
 
-function Home() {
+import {
+    checkGroupRequest,
+    createGroupRequest
+} from '../requests.js';
+
+const Home = () => {
     const [groupLink, setGroupLink] = useState("");
     const [name, setName] = useState("");
     const [warning, setWarning] = useState(false);
@@ -13,38 +18,20 @@ function Home() {
         const link = words.split(' ').join('-');
     }
 
-    const checkGroup = (link) => {
-        console.log(link);
-        fetch('http://localhost:3001/check-group', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({"link": link})
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Success:', data);
-          if (!data.success) {
-              setWarning(true);
-          }
-          else {
-              window.location = `/${link}`;
-          }
-        })
-        .catch((err) => console.log("Error: ", err))
+    const checkGroup = async (link) => {
+        const check = await checkGroupRequest(link);
+        if (check.success) window.location = `/${link}`;
+        setWarning(true);
     }
 
-    const createGroup = (memberName) => {
-        fetch('http://localhost:3001/create-group', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({"name": memberName})
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log(data);
-          let groups = JSON.parse(localStorage.getItem("groups"));
-        })
-        .catch((err) => console.log("Error: ", err))
+    const createGroup = async (memberName) => {
+        const group = await createGroupRequest(memberName);
+        console.log(group);
+        let groups = JSON.parse(localStorage.getItem("groups"));
+        groups[group.group_link] = {};
+        groups[group.group_link]['name'] = name;
+        localStorage.setItem("groups", JSON.stringify(groups));
+        window.location = group.group_link;
     }
 
     return (

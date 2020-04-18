@@ -2,40 +2,51 @@ import React, { useState, useEffect } from 'react';
 import './grid.css';
 import Timeslot from './Timeslot.js';
 
+import {
+    checkGroupRequest,
+    groupInfoRequest
+} from '../requests.js';
+
 const Grid = () => {
     // const [timeSlots, setTimeSlots] = useState(['0', '0']);
     const [timeSlots, setTimeSlots] = useState([]);
+    const [availability, setAvailability] = useState([]);
 
     useEffect(() => {
         let path = window.location.pathname;
         path = path.split('/')[1]
-        fetch('http://localhost:3001/check-group', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({"link": path})
-        })
-        .then((response) => response.json())
-        .then((data) => {
-          console.log('Success:', data);
-          if (!data.success) {
-              window.location = '/';
-          }
-          else {
-              renderGrid();
-          }
-        })
-        .catch((err) => console.log("Error: ", err))
+        const initialize = async () => {
+            const info = await retreiveGroup(path);
+            renderGrid(info);
+            console.log("info: ", info);
+        }
+        initialize();
     }, [])
 
-    const renderGrid = () => {
+    const retreiveGroup = async (link) => {
+        const checkGroup = await checkGroupRequest(link);
+        if (!checkGroup.success) {
+            window.location = '/';
+        }
+        else {
+            const groupInfo = await groupInfoRequest(link);
+            console.log(groupInfo);
+            return groupInfo;
+        }
+    }
+
+    const renderGrid = (info) => {
         let t = []
         for (let i = 0; i < 168; i++) {
-            setTimeout(() => {
-                setTimeSlots(timeSlots => [...timeSlots, 0]);
-                // console.log("OK", timeSlots);
-            }, 10 * i)
+            let timeSlotInfo = {"members": [], "votes": []};
+            for (let j = 0, len = info.length; j < len; j++) {
+                if (info[j].availability[i] === "1") timeSlotInfo.members.push(info[j].member_name);
+                if (info[j].vote == i) timeSlotInfo.votes.push(info[j].vote);
+            }
+            setTimeSlots(timeSlots => [...timeSlots, timeSlotInfo]);
+            // setTimeout(() => {
+            //     setTimeSlots(timeSlots => [...timeSlots, 0]);
+            // }, 10 * i)
         }
     }
 
@@ -51,7 +62,7 @@ const Grid = () => {
 
             </div>
             <div className="grid">
-                {timeSlots.map((item, i) =>  <Timeslot key={i} index={i} selectTime={selectTime} /> )}
+                {timeSlots.map((item, i) =>  <Timeslot key={i} index={i} members={item.members} votes={item.votes} selectTime={selectTime} /> )}
             </div>
         </div>
     );
