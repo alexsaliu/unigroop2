@@ -1,8 +1,9 @@
 .grid-container {
     display: flex;
     justify-content: center;
+    align-items: center;
     align-content: baseline;
-    height: 80vh;
+    flex-direction: column;
 }
 .grid {
     display: flex;
@@ -22,4 +23,13 @@
 
 .green {
     background: lightgreen;
+}
+.yellow {
+    background: yellow;
+}
+.orange {
+    background: orange;
+}
+.red {
+    background: red;
 }
