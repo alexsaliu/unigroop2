@@ -8,11 +8,9 @@ const checkGroupRequest = (link) => {
     })
     .then((response) => response.json())
     .then((data) => {
-        console.log("1: ", data)
       return data;
     })
     .catch((err) => {
-        console.log("1")
         return err;
     })
 }

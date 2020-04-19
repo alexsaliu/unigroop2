@@ -19,56 +19,82 @@ const initializeAvailability = (numberOfTimeslots) => {
 }
 
 const Grid = () => {
-    const [timeSlots, setTimeSlots] = useState([]);
+    const [timeSlots, setTimeSlots] = useState("");
     const [availability, setAvailability] = useState(initializeAvailability(168));
-    const [settingAvailability, setSettingAvailability] = useState(true);
     const [groupLink, setGroupLink] = useState("");
-    const [name, setName] = useState("alex");
+    const [groupMembers, setGroupMembers] = useState("");
+    const [groupScreen, setGroupScreen] = useState((localStorage.getItem("groupScreen") === 'true'));
+    const [vote, setVote] = useState(-1);
+    const [nameInput, setNameInput] = useState("");
+    const [promptName, setPromptName] = useState(false);
+    const [userName, setUserName] = useState("");
 
     useEffect(() => {
-        let path = window.location.pathname;
-        path = path.split('/')[1]
-        const initialize = async () => {
-            const info = await retreiveGroup(path);
-            renderGrid(info);
-            console.log("info: ", info);
+        let link = window.location.pathname;
+        link = link.split('/')[1];
+        const checkGroup = async () => {
+            const check = await checkGroupRequest(link);
+            console.log("Group Check: ", check);
+            if (!check.success) window.location = '/';
+            setGroupLink(link);
+            handelName(link);
         }
-        initialize();
+        checkGroup();
     }, [])
 
-    const retreiveGroup = async (link) => {
-        const checkGroup = await checkGroupRequest(link);
-        if (!checkGroup.success) {
-            window.location = '/';
+    const handelName = (link) => {
+        if (!localStorage.getItem("groups")) {
+            localStorage.setItem("groups", "{}");
+            setPromptName(true);
         }
         else {
-            setGroupLink(link);
-            const groupInfo = await groupInfoRequest(link);
-            console.log(groupInfo);
-            return groupInfo;
+            let groups = JSON.parse(localStorage.getItem("groups"));
+            if (groups[link]) {
+                setUserName(groups[link]);
+                renderGrid(link, groups[link]);
+            }
+            else {
+                setPromptName(true);
+            }
         }
     }
 
-    const renderGrid = (info) => {
+    const handelSettingName = (link, name) => {
+        let groups = JSON.parse(localStorage.getItem("groups"));
+        groups[link] = name;
+        localStorage.setItem("groups", JSON.stringify(groups));
+        setUserName(nameInput);
+        setPromptName(false);
+        renderGrid(groupLink, name);
+    }
+
+    const renderGrid = async (link, name) => {
+        const info = await groupInfoRequest(link);
         let t = []
+        let allTimeSlots = [];
         for (let i = 0; i < 168; i++) {
             let timeSlotInfo = {"members": [], "votes": [], "color": ""};
             for (let j = 0, len = info.length; j < len; j++) {
                 if (info[j].availability[i] === "1") timeSlotInfo.members.push(info[j].member_name);
-                if (info[j].vote == i) timeSlotInfo.votes.push(info[j].vote);
+                if (info[j].vote == i) timeSlotInfo.votes.push(info[j].member_name);
+                if (info[j].vote == i && info[j].member_name === name) setVote(info[j].vote);
                 timeSlotInfo.color = determineColor(timeSlotInfo.members.length, info.length);
 
                 // Set availability
                 if (info[j].member_name === name) {
                     const userAvailability = info[j].availability.split("").map(Number);
                     setAvailability(userAvailability);
+                    console.log("userAvailability: ", userAvailability);
                 }
             }
-            setTimeSlots(timeSlots => [...timeSlots, timeSlotInfo]);
-            // setTimeout(() => {
-            //     setTimeSlots(timeSlots => [...timeSlots, 0]);
-            // }, 10 * i)
+            allTimeSlots.push(timeSlotInfo);
         }
+        let members = []
+        for (let i = 0; i < info.length; i++) {
+            members.push(info[i].member_name);
+        }
+        setGroupMembers(members);
+        setTimeSlots(allTimeSlots);
     }
 
     const determineColor = (availableMembers, totalMembers) => {
@@ -87,44 +113,70 @@ const Grid = () => {
         console.log(currentAvailability);
     }
 
-    const updateAvailability = async (link, username, userAvailability) => {
+    const updateAvailability = async (link, name, userAvailability) => {
         userAvailability = userAvailability.join('');
         console.log("updating availability: ", userAvailability);
-        const update = await updateAvailabilityRequest(link, username, userAvailability);
+        const update = await updateAvailabilityRequest(link, name, userAvailability);
         console.log("Update: ", update);
     }
 
     const handelVote = async (vote) => {
-        updateVote(groupLink, name, vote);
+        updateVote(groupLink, userName, vote);
     }
 
-    const updateVote = async (link, username, vote) => {
-        const updatedVote = await updateVoteRequest(link, username, vote);
-        console.log(updatedVote);
+    const updateVote = async (link, name, vote) => {
+        const updatedVote = await updateVoteRequest(link, name, vote);
+        console.log("updatedVote: ", updatedVote);
+        setVote(updatedVote.vote);
     }
 
-    return (
-        <div className="grid-container">
-            <div className="grid-days">
+    const toggleScreens = (toggle) => {
+        localStorage.setItem("groupScreen", toggle)
+        setGroupScreen(toggle);
+    }
 
+    if (promptName) {
+        return (
+            <div>
+                <input onChange={(e) => setNameInput(e.target.value)} type="text" />
+                <button onClick={() => handelSettingName(groupLink, nameInput)}>Submit Name</button>
             </div>
-            <button onClick={() => setSettingAvailability(!settingAvailability)}>{settingAvailability ? "View Group" : "Change Availability"}</button>
-            {settingAvailability ? <button onClick={() => updateAvailability(groupLink, name, availability)}>Update Availability</button> : ''}
-            <div className="grid">
-                {timeSlots.map((timeSlot, i) =>
-                    <Timeslot
-                        key={i}
-                        index={i}
-                        info={timeSlot}
-                        selectTime={selectTime}
-                        settingAvailability={settingAvailability}
-                        availability={availability}
-                        handelVote={handelVote}
-                    />
-                )}
+        );
+    }
+    else if (timeSlots) {
+        return (
+            <div className="grid-container">
+                <div className="grid-days">
+                    Monday
+                </div>
+                <div className="grid-times">
+                    8am
+                </div>
+                <div className="members">{groupMembers}</div>
+                <button onClick={() => toggleScreens(!groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
+                {!groupScreen ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button> : ''}
+                <div className="grid">
+                    {timeSlots.map((timeSlot, i) =>
+                        <Timeslot
+                            key={i}
+                            index={i}
+                            info={timeSlot}
+                            selectTime={selectTime}
+                            groupScreen={groupScreen}
+                            availability={availability}
+                            handelVote={handelVote}
+                            vote={vote}
+                        />
+                    )}
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
+    else {
+        return (
+            <div>Loading...</div>
+        );
+    }
 }
 
 export default Grid;
