@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import './grid.css';
 
-const Timeslot = ({index, selectTime, members, votes, settingAvailability, color}) => {
-    const [selected, setSelected] = useState(false);
+const Timeslot = ({index, selectTime, members, votes, settingAvailability, color, name, availability}) => {
+    const [selected, setSelected] = useState(availability[index]);
     const [timeSlotColor, setColor] = useState(color);
 
     const showNames = () => {
