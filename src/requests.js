@@ -1,5 +1,7 @@
+const api = 'http://localhost:3001';
+
 const checkGroupRequest = (link) => {
-    return fetch('http://localhost:3001/check-group', {
+    return fetch(`${api}/check-group`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({link})
@@ -16,7 +18,7 @@ const checkGroupRequest = (link) => {
 }
 
 const createGroupRequest = (name) => {
-    return fetch('http://localhost:3001/create-group', {
+    return fetch(`${api}/create-group`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({name})
@@ -28,8 +30,21 @@ const createGroupRequest = (name) => {
     .catch((err) => console.log("Error: ", err))
 }
 
+const updateVoteRequest = (link, name, vote) => {
+    return fetch(`${api}/vote`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({link, name, vote})
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        return data;
+    })
+    .catch((err) => console.log("Error: ", err))
+}
+
 const groupInfoRequest = (link) => {
-    return fetch(`http://localhost:3001/group-info/${link}`)
+    return fetch(`${api}/group-info/${link}`)
     .then((response) => response.json())
     .then((data) => {
         return data
@@ -40,7 +55,7 @@ const groupInfoRequest = (link) => {
 }
 
 const updateAvailabilityRequest = (link, name, availability) => {
-    return fetch('http://localhost:3001/update-availability', {
+    return fetch(`${api}/update-availability`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({link, name, availability})
@@ -56,5 +71,6 @@ module.exports = {
     checkGroupRequest,
     createGroupRequest,
     groupInfoRequest,
-    updateAvailabilityRequest
+    updateAvailabilityRequest,
+    updateVoteRequest
 };

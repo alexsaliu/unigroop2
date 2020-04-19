@@ -1,25 +1,38 @@
 import React, {useState, useEffect} from 'react';
 import './grid.css';
 
-const Timeslot = ({index, selectTime, members, votes, settingAvailability, color, name, availability}) => {
+const Timeslot = ({index, selectTime, settingAvailability, name, availability, handelVote, info}) => {
     const [selected, setSelected] = useState(availability[index]);
-    const [timeSlotColor, setColor] = useState(color);
+    const [timeSlotColor, setColor] = useState(info.color);
+    const [tapped, setTapped] = useState(false);
 
     const showNames = () => {
-        console.log(members);
+        console.log(info.members);
+    }
+
+    const handelDoubleTap = (timeSlot) => {
+        if (tapped) {
+            console.log("double tapped");
+            console.log(timeSlot);
+            handelVote(timeSlot);
+        }
+        setTapped(true);
+        setTimeout(() => {
+            setTapped(false)
+        }, 300)
     }
 
     if (settingAvailability) {
         return (
             <div className={selected ? 'green timeslot' : 'timeslot'} onClick={() => {selectTime(index); setSelected(!selected)}}>
-                {members + " " + votes}
+                {info.members + " " + info.votes}
             </div>
         );
     }
     else {
         return (
-            <div className={`${timeSlotColor} timeslot`} onClick={() => showNames()}>
-                {members + " " + votes}
+            <div className={`${timeSlotColor} timeslot`} onClick={() => {showNames(); handelDoubleTap(index)}}>
+                {info.members + " " + info.votes}
             </div>
         );
     }

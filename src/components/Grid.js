@@ -5,7 +5,8 @@ import Timeslot from './Timeslot.js';
 import {
     checkGroupRequest,
     groupInfoRequest,
-    updateAvailabilityRequest
+    updateAvailabilityRequest,
+    updateVoteRequest
 } from '../requests.js';
 
 const initializeAvailability = (numberOfTimeslots) => {
@@ -93,6 +94,15 @@ const Grid = () => {
         console.log("Update: ", update);
     }
 
+    const handelVote = async (vote) => {
+        updateVote(groupLink, name, vote);
+    }
+
+    const updateVote = async (link, username, vote) => {
+        const updatedVote = await updateVoteRequest(link, username, vote);
+        console.log(updatedVote);
+    }
+
     return (
         <div className="grid-container">
             <div className="grid-days">
@@ -101,16 +111,15 @@ const Grid = () => {
             <button onClick={() => setSettingAvailability(!settingAvailability)}>{settingAvailability ? "View Group" : "Change Availability"}</button>
             {settingAvailability ? <button onClick={() => updateAvailability(groupLink, name, availability)}>Update Availability</button> : ''}
             <div className="grid">
-                {timeSlots.map((item, i) =>
+                {timeSlots.map((timeSlot, i) =>
                     <Timeslot
                         key={i}
                         index={i}
-                        members={item.members}
-                        votes={item.votes}
+                        info={timeSlot}
                         selectTime={selectTime}
                         settingAvailability={settingAvailability}
-                        color={item.color}
                         availability={availability}
+                        handelVote={handelVote}
                     />
                 )}
             </div>
