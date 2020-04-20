@@ -28,6 +28,20 @@ const createGroupRequest = (name) => {
     .catch((err) => console.log("Error: ", err))
 }
 
+const joinGroupRequest = (link, name) => {
+    console.log("OKOKOK: ", link)
+    return fetch(`${api}/join-group`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({link, name})
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        return data;
+    })
+    .catch((err) => console.log("Error: ", err))
+}
+
 const updateVoteRequest = (link, name, vote) => {
     return fetch(`${api}/vote`, {
         method: 'POST',
@@ -68,6 +82,7 @@ const updateAvailabilityRequest = (link, name, availability) => {
 module.exports = {
     checkGroupRequest,
     createGroupRequest,
+    joinGroupRequest,
     groupInfoRequest,
     updateAvailabilityRequest,
     updateVoteRequest

@@ -4,6 +4,7 @@ import Grid from './Grid.js';
 
 import {
     checkGroupRequest,
+    joinGroupRequest
 } from '../requests.js';
 
 const Name = () => {
@@ -44,12 +45,15 @@ const Name = () => {
         }
     }
 
-    const handelSettingName = (link, name) => {
+    const handelSettingName = async (link, name) => {
         let groups = JSON.parse(localStorage.getItem("groups"));
         groups[link] = name;
         localStorage.setItem("groups", JSON.stringify(groups));
         setUserName(nameInput);
-        setPromptName(false);
+        const joinedGroup = await joinGroupRequest(link, name);
+        if (joinedGroup.success) {
+            setPromptName(false);
+        }
     }
 
     if (checkingGroup) {

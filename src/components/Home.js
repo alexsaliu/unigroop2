@@ -10,19 +10,33 @@ const Home = () => {
     const [name, setName] = useState("");
     const [warning, setWarning] = useState(false);
 
+    useEffect(() => {
+        if (!localStorage.getItem("groups")) {
+            localStorage.setItem("groups", "{}");
+        }
+    }, [])
+
     const formatLink = (words) => {
         const link = words.split(' ').join('-');
     }
 
     const checkGroup = async (link) => {
         const check = await checkGroupRequest(link);
-        if (check.success) window.location = `/${link}`;
-        setWarning(true);
+        console.log(check);
+        if (check.success) {
+            window.location = `/${link}`;
+        }
+        else {
+            setWarning(true);
+        }
     }
 
     const createGroup = async (memberName) => {
         const group = await createGroupRequest(memberName);
         console.log(group);
+        let groups = JSON.parse(localStorage.getItem("groups"));
+        groups[group.group_link] = name;
+        localStorage.setItem("groups", JSON.stringify(groups));
         window.location = group.group_link;
     }
 
