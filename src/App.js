@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import './App.css';
 
 import Header from './components/Header';
-import Grid from './components/Grid';
+import Name from './components/Name';
 import Home from './components/Home';
 
 function App() {
@@ -13,7 +13,7 @@ function App() {
                 <Suspense fallback={<div>Loading...</div>}>
                     <Switch>
                         <Route exact path="/" component={Home}/>
-                        <Route path="/:group" component={Grid}/>
+                        <Route path="/:group" component={Name}/>
                     </Switch>
                 </Suspense>
             </Router>

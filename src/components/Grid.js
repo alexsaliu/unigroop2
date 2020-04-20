@@ -9,68 +9,25 @@ import {
     updateVoteRequest
 } from '../requests.js';
 
-const initializeAvailability = (numberOfTimeslots) => {
-    let data = [];
-    for( let i = 0; i < numberOfTimeslots; i++) {
-        if (i === 10 )data.push(1);
-        if (i !== 10 )data.push(0);
-    }
-    return data
-}
-
-const Grid = () => {
+const Grid = ({groupLink, userName}) => {
     const [timeSlots, setTimeSlots] = useState("");
-    const [availability, setAvailability] = useState(initializeAvailability(168));
-    const [groupLink, setGroupLink] = useState("");
+    const [availability, setAvailability] = useState("");
     const [groupMembers, setGroupMembers] = useState("");
     const [groupScreen, setGroupScreen] = useState((localStorage.getItem("groupScreen") === 'true'));
     const [vote, setVote] = useState(-1);
-    const [nameInput, setNameInput] = useState("");
-    const [promptName, setPromptName] = useState(false);
-    const [userName, setUserName] = useState("");
 
     useEffect(() => {
-        let link = window.location.pathname;
-        link = link.split('/')[1];
-        const checkGroup = async () => {
-            const check = await checkGroupRequest(link);
-            console.log("Group Check: ", check);
-            if (!check.success) window.location = '/';
-            setGroupLink(link);
-            handelName(link);
+        const getGroupInfo = async () => {
+            console.log("LINK: ", groupLink);
+            console.log("name: ", userName);
+            const info = await groupInfoRequest(groupLink);
+            console.log("Group Info: ", info);
+            renderGrid(groupLink, userName, info);
         }
-        checkGroup();
+        getGroupInfo();
     }, [])
 
-    const handelName = (link) => {
-        if (!localStorage.getItem("groups")) {
-            localStorage.setItem("groups", "{}");
-            setPromptName(true);
-        }
-        else {
-            let groups = JSON.parse(localStorage.getItem("groups"));
-            if (groups[link]) {
-                setUserName(groups[link]);
-                renderGrid(link, groups[link]);
-            }
-            else {
-                setPromptName(true);
-            }
-        }
-    }
-
-    const handelSettingName = (link, name) => {
-        let groups = JSON.parse(localStorage.getItem("groups"));
-        groups[link] = name;
-        localStorage.setItem("groups", JSON.stringify(groups));
-        setUserName(nameInput);
-        setPromptName(false);
-        renderGrid(groupLink, name);
-    }
-
-    const renderGrid = async (link, name) => {
-        const info = await groupInfoRequest(link);
-        let t = []
+    const renderGrid = async (link, name, info) => {
         let allTimeSlots = [];
         for (let i = 0; i < 168; i++) {
             let timeSlotInfo = {"members": [], "votes": [], "color": ""};
@@ -84,12 +41,11 @@ const Grid = () => {
                 if (info[j].member_name === name) {
                     const userAvailability = info[j].availability.split("").map(Number);
                     setAvailability(userAvailability);
-                    console.log("userAvailability: ", userAvailability);
                 }
             }
             allTimeSlots.push(timeSlotInfo);
         }
-        let members = []
+        let members = [];
         for (let i = 0; i < info.length; i++) {
             members.push(info[i].member_name);
         }
@@ -135,15 +91,7 @@ const Grid = () => {
         setGroupScreen(toggle);
     }
 
-    if (promptName) {
-        return (
-            <div>
-                <input onChange={(e) => setNameInput(e.target.value)} type="text" />
-                <button onClick={() => handelSettingName(groupLink, nameInput)}>Submit Name</button>
-            </div>
-        );
-    }
-    else if (timeSlots) {
+    if (timeSlots) {
         return (
             <div className="grid-container">
                 <div className="grid-days">
