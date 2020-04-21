@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import './grid.css';
 
-const Timeslot = ({index, selectTime, groupScreen, availability, handelVote, info, vote}) => {
+const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, info, vote}) => {
     const [selected, setSelected] = useState(availability[index]);
     const [timeSlotColor, setColor] = useState(info.color);
     const [tapped, setTapped] = useState(false);
@@ -12,7 +12,7 @@ const Timeslot = ({index, selectTime, groupScreen, availability, handelVote, inf
 
     const handelDoubleTap = (timeSlot) => {
         if (tapped) {
-            handelVote(timeSlot);
+            selectVote(timeSlot);
         }
         setTapped(true);
         setTimeout(() => {

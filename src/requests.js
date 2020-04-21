@@ -29,7 +29,6 @@ const createGroupRequest = (name) => {
 }
 
 const joinGroupRequest = (link, name) => {
-    console.log("OKOKOK: ", link)
     return fetch(`${api}/join-group`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from 'socket.io-client';
 import './grid.css';
 import Timeslot from './Timeslot.js';
+import { prepareGridData } from '../helpers.js';
 import {
     checkGroupRequest,
     groupInfoRequest,
@@ -11,67 +12,71 @@ import {
 
 const api = 'http://localhost:3001';
 
-const Grid = ({groupLink, userName}) => {
+// Socket io connection with server
+const socket = socketIOClient(api);
+
+// socket.on(`message`, (message) => {
+//     console.log("MESSAGE: ", message);
+// })
+
+
+
+    // console.log("OK");
+// }
+
+const Grid = ({groupLink, userName}, updatedSocket) => {
     const [timeSlots, setTimeSlots] = useState("");
     const [availability, setAvailability] = useState("");
     const [groupMembers, setGroupMembers] = useState("");
     const [groupScreen, setGroupScreen] = useState((localStorage.getItem("groupScreen") === 'true'));
     const [vote, setVote] = useState(-1);
-    const [socket, setSocket] = useState("");
 
     useEffect(() => {
         const getGroupInfo = async () => {
             const info = await groupInfoRequest(groupLink);
             console.log("Group Info: ", info);
             renderGrid(groupLink, userName, info);
+            socket.emit('joinRoom', { userName, groupLink });
         }
         getGroupInfo();
-        // Socket io connection with server
-        setSocket(socketIOClient(api));
 
+        socket.on(`message`, (message) => {
+            console.log("MESSAGE: ", message);;
+        })
+
+        socket.on(`update`, (info) => {
+            console.log("MESSAGE: ", info);
+            renderGrid(groupLink, userName, info);
+        })
     }, [])
 
     const sendMessage = () => {
-        socket.emit('updated');
+        socket.emit('message', { userName, groupLink });
+    }
+    const test = () => {
+        console.log("KODJWSIBHBV");
     }
 
-    const renderGrid = async (link, name, info) => {
-        let allTimeSlots = [];
-        for (let i = 0; i < 168; i++) {
-            let timeSlotInfo = {"members": [], "votes": [], "color": ""};
-            for (let j = 0, len = info.length; j < len; j++) {
-                // Set available members for current timeslot
-                if (info[j].availability[i] === "1") timeSlotInfo.members.push(info[j].member_name);
-                // Set members who voted for current timeslot
-                if (info[j].vote == i) timeSlotInfo.votes.push(info[j].member_name);
-                // Detemine color for timeslot
-                timeSlotInfo.color = determineColor(timeSlotInfo.members.length, info.length);
-                // Capture vote is user voted for current timeslot
-                if (info[j].vote == i && info[j].member_name === name) setVote(info[j].vote);
 
-                // Set availability
-                if (info[j].member_name === name) {
-                    const userAvailability = info[j].availability.split("").map(Number);
-                    setAvailability(userAvailability);
-                }
-            }
-            allTimeSlots.push(timeSlotInfo);
-        }
+    // socket.on(`update`, (message) => {
+    //     console.log("MESSAGE: ", message);
+    //     renderGrid(groupLink, userName, message);
+    // })
+
+    const renderGrid = async (link, name, info) => {
+        const gridData = prepareGridData(link, name, info);
         let members = [];
         for (let i = 0; i < info.length; i++) {
             members.push(info[i].member_name);
+            // Set availability
+            if (info[i].member_name === name) {
+                const userAvailability = info[i].availability.split("").map(Number);
+                setAvailability(userAvailability);
+            }
         }
         setGroupMembers(members);
-        setTimeSlots(allTimeSlots);
-    }
-
-    const determineColor = (availableMembers, totalMembers) => {
-        const percentage = availableMembers / totalMembers * 100;
-        if (percentage === 0) return "";
-        if (percentage < 25) return "red";
-        if (percentage < 50) return "orange";
-        if (percentage < 75) return "yellow";
-        return "green";
+        setVote(gridData.vote);
+        setTimeSlots(gridData.allTimeSlots);
     }
 
     const selectTime = (index) => {
@@ -81,20 +86,25 @@ const Grid = ({groupLink, userName}) => {
         console.log(currentAvailability);
     }
 
+    const selectVote = async (vote) => {
+        setVote(vote);
+    }
+
     const updateAvailability = async (link, name, userAvailability) => {
         userAvailability = userAvailability.join('');
         const update = await updateAvailabilityRequest(link, name, userAvailability);
         console.log("Update: ", update);
-    }
-
-    const handelVote = async (vote) => {
-        updateVote(groupLink, userName, vote);
+        emitUpdate(name, link);
     }
 
     const updateVote = async (link, name, vote) => {
         const updatedVote = await updateVoteRequest(link, name, vote);
         console.log("updatedVote: ", updatedVote);
-        setVote(updatedVote.vote);
+        emitUpdate(name, link);
+    }
+
+    const emitUpdate = (name, link) => {
+        socket.emit('update', { 'userName': name, 'groupLink': link });
     }
 
     const toggleScreens = (toggle) => {
@@ -114,7 +124,9 @@ const Grid = ({groupLink, userName}) => {
                 </div>
                 <div className="members">{groupMembers}</div>
                 <button onClick={() => toggleScreens(!groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
-                {!groupScreen ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button> : ''}
+                {!groupScreen
+                ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
+                : <button onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
                 <div className="grid">
                     {timeSlots.map((timeSlot, i) =>
                         <Timeslot
@@ -124,7 +136,7 @@ const Grid = ({groupLink, userName}) => {
                             selectTime={selectTime}
                             groupScreen={groupScreen}
                             availability={availability}
-                            handelVote={handelVote}
+                            selectVote={selectVote}
                             vote={vote}
                         />
                     )}
