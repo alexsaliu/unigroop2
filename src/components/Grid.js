@@ -7,7 +7,7 @@ import {
     checkGroupRequest,
     groupInfoRequest,
     updateAvailabilityRequest,
-    updateVoteRequest
+    updateVoteRequest,
 } from '../requests.js';
 
 const api = 'http://localhost:3001';
@@ -66,17 +66,27 @@ const Grid = ({groupLink, userName}, updatedSocket) => {
     const renderGrid = async (link, name, info) => {
         const gridData = prepareGridData(link, name, info);
         let members = [];
+        let userIsInGroup = false;
         for (let i = 0; i < info.length; i++) {
             members.push(info[i].member_name);
             // Set availability
             if (info[i].member_name === name) {
+                userIsInGroup = true;
                 const userAvailability = info[i].availability.split("").map(Number);
                 setAvailability(userAvailability);
             }
         }
+        if (!userIsInGroup) removeUser(name);
         setGroupMembers(members);
         setVote(gridData.vote);
         setTimeSlots(gridData.allTimeSlots);
+    }
+
+    const removeUser = (name) => {
+        let groups = JSON.parse(localStorage.getItem("groups"));
+        groups[groupLink] = "";
+        localStorage.setItem("groups", JSON.stringify(groups));
+        window.location = '/';
     }
 
     const selectTime = (index) => {
