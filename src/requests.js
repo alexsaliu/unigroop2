@@ -15,11 +15,11 @@ const checkGroupRequest = (link) => {
     })
 }
 
-const createGroupRequest = (name) => {
+const createGroupRequest = (name, privateGroup) => {
     return fetch(`${api}/create-group`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({name})
+        body: JSON.stringify({name, privateGroup})
     })
     .then((response) => response.json())
     .then((data) => {
@@ -28,11 +28,11 @@ const createGroupRequest = (name) => {
     .catch((err) => console.log("Error: ", err))
 }
 
-const joinGroupRequest = (link, name) => {
+const joinGroupRequest = (link, name, privateGroup) => {
     return fetch(`${api}/join-group`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({link, name})
+        body: JSON.stringify({link, name, privateGroup})
     })
     .then((response) => response.json())
     .then((data) => {

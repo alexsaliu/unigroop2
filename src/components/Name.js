@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './grid.css';
 import Grid from './Grid.js';
-
+import { randomNameGenerator } from '../helpers.js';
 import {
     checkGroupRequest,
     joinGroupRequest
@@ -14,6 +14,8 @@ const Name = () => {
     const [userName, setUserName] = useState("");
     const [checkingGroup, setCheckingGroup] = useState(true);
     const [groupScreen, setGroupScreen] = useState(false);
+    const [privateGroup, setPrivateGroup] = useState(true);
+    const [warning, setWarning] = useState("");
 
     useEffect(() => {
         let link = window.location.pathname;
@@ -24,6 +26,8 @@ const Name = () => {
             if (!check.success) window.location = '/';
             setGroupLink(link);
             setCheckingGroup(false);
+            if (!check.privateGroup) setPrivateGroup(false);
+            console.log("PRIVATE :", check.privateGroup);
             handelName(link);
         }
         checkGroup();
@@ -47,18 +51,32 @@ const Name = () => {
         }
     }
 
-    const handelSettingName = async (link, name) => {
-        let groups = JSON.parse(localStorage.getItem("groups"));
-        groups[link] = {'name': "", 'groupScreen': ""};
-        groups[link].name = name;
-        groups[link].groupScreen = false;
-        setGroupScreen(false);
-        localStorage.setItem("groups", JSON.stringify(groups));
-        setUserName(nameInput);
-        const joinedGroup = await joinGroupRequest(link, name);
-        if (joinedGroup.success) {
-            setPromptName(false);
+    const handelSettingName = async (link, name, privateGroup) => {
+        if (!privateGroup && !name) {
+            setWarning("Click above to generate a name");
         }
+        else if (name.length < 2) {
+            setWarning("Name must be at least 2 characters");
+        }
+        else {
+            let groups = JSON.parse(localStorage.getItem("groups"));
+            groups[link] = {'name': "", 'groupScreen': ""};
+            groups[link].name = name;
+            groups[link].groupScreen = false;
+            setGroupScreen(false);
+            localStorage.setItem("groups", JSON.stringify(groups));
+            setUserName(nameInput);
+            const joinedGroup = await joinGroupRequest(link, name, privateGroup);
+            if (joinedGroup.success) {
+                setPromptName(false);
+            }
+            console.log(joinedGroup);
+        }
+    }
+
+    const generateName = () => {
+        const name = randomNameGenerator();
+        setNameInput(name);
     }
 
     if (checkingGroup) {
@@ -69,15 +87,19 @@ const Name = () => {
     else if (promptName) {
         return (
             <div>
-                <input onChange={(e) => setNameInput(e.target.value)} type="text" />
-                <button onClick={() => handelSettingName(groupLink, nameInput)}>Submit Name</button>
+                {privateGroup ?
+                    <input onChange={(e) => setNameInput(e.target.value)} type="text" /> :
+                    <div onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</div>
+                }
+                {warning ? <div>{warning}</div> : ''}
+                <button onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>
             </div>
         );
     }
     else {
         return (
             <div>
-                <Grid groupLink={groupLink} userName={userName} screen={groupScreen} />
+                <Grid groupLink={groupLink} userName={userName} screen={groupScreen} privateGroup={privateGroup} />
             </div>
         );
     }

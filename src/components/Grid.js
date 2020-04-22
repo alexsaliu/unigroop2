@@ -21,12 +21,13 @@ const api = 'http://localhost:3001';
 // Socket io connection with server
 const socket = socketIOClient(api);
 
-const Grid = ({groupLink, userName, screen}, updatedSocket) => {
+const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [timeSlots, setTimeSlots] = useState("");
     const [availability, setAvailability] = useState("");
     const [groupMembers, setGroupMembers] = useState("");
     const [groupScreen, setGroupScreen] = useState(screen);
     const [vote, setVote] = useState(-1);
+    const [admin, setAdmin] = useState(false);
     const [message, setMessage] = useState("");
 
     useEffect(() => {
@@ -64,6 +65,7 @@ const Grid = ({groupLink, userName, screen}, updatedSocket) => {
             // Set availability
             if (info[i].member_name === name) {
                 userIsInGroup = true;
+                if (!privateGroup && info[i].admin) setAdmin(true);
                 const userAvailability = info[i].availability.split("").map(Number);
                 setAvailability(userAvailability);
             }
@@ -131,7 +133,7 @@ const Grid = ({groupLink, userName, screen}, updatedSocket) => {
                     8am
                 </div>
                 <div className="members">{groupMembers.map((member, i) =>
-                    <div key={i}>{member}<div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div></div>
+                    <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
                 )}</div>
                 <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
                 {!groupScreen

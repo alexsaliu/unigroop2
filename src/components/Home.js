@@ -7,8 +7,9 @@ import {
 
 const Home = () => {
     const [groupLink, setGroupLink] = useState("");
-    const [name, setName] = useState("");
-    const [warning, setWarning] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [warning, setWarning] = useState("");
+    const [privateGroup, setPrivateGroup] = useState(true);
 
     useEffect(() => {
         if (!localStorage.getItem("groups")) {
@@ -27,29 +28,37 @@ const Home = () => {
             window.location = `/${link}`;
         }
         else {
-            setWarning(true);
+            setWarning("Group does not exist");
         }
     }
 
-    const createGroup = async (memberName) => {
-        const group = await createGroupRequest(memberName);
-        console.log(group);
-        let groups = JSON.parse(localStorage.getItem("groups"));
-        groups[group.group_link] = {'name': "", 'groupScreen': ""};;
-        groups[group.group_link].name = name;
-        groups[group.group_link].groupScreen = false;
-        localStorage.setItem("groups", JSON.stringify(groups));
-        window.location = group.group_link;
+    const createGroup = async (name, privateGroup) => {
+        if (userName.length < 2) {
+            setWarning("Name must be at least 2 characters");
+        }
+        else {
+            const group = await createGroupRequest(name, privateGroup);
+            console.log(group);
+            let groups = JSON.parse(localStorage.getItem("groups"));
+            groups[group.group_link] = {'name': "", 'groupScreen': ""};;
+            groups[group.group_link].name = name;
+            groups[group.group_link].groupScreen = false;
+            localStorage.setItem("groups", JSON.stringify(groups));
+            window.location = group.group_link;
+        }
     }
 
     return (
         <div className="home">
-            Home
-            <div style={warning ? {} : {display: 'none'}}>Group does not exist</div>
+            <div>Home</div>
+            {warning ? <div>{warning}</div> : ''}
             <input onChange={(e) => setGroupLink(e.target.value)} type="text" />
             <button onClick={() => checkGroup(groupLink)}>Submit</button>
-            <input onChange={(e) => setName(e.target.value)} type="text" />
-            <button onClick={() => createGroup(name)}>Name</button>
+            <br/>
+            <input onChange={(e) => setUserName(e.target.value)} type="text" />
+            <button onClick={() => createGroup(userName, privateGroup)}>Name</button>
+            <div onClick={() => setPrivateGroup(true)}>Private</div>
+            <div onClick={() => setPrivateGroup(false)}>Public</div>
         </div>
     );
 }

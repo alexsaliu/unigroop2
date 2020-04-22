@@ -33,3 +33,7 @@
 .red {
     background: red;
 }
+
+.error {
+    color: red;
+}
