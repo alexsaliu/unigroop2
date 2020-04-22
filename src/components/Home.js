@@ -35,7 +35,9 @@ const Home = () => {
         const group = await createGroupRequest(memberName);
         console.log(group);
         let groups = JSON.parse(localStorage.getItem("groups"));
-        groups[group.group_link] = name;
+        groups[group.group_link] = {'name': "", 'groupScreen': ""};;
+        groups[group.group_link].name = name;
+        groups[group.group_link].groupScreen = false;
         localStorage.setItem("groups", JSON.stringify(groups));
         window.location = group.group_link;
     }

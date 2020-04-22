@@ -2,34 +2,32 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from 'socket.io-client';
 import './grid.css';
 import Timeslot from './Timeslot.js';
-import { prepareGridData } from '../helpers.js';
+import {
+    prepareGridData,
+    setScreen
+ } from '../helpers.js';
 import {
     checkGroupRequest,
     groupInfoRequest,
     updateAvailabilityRequest,
     updateVoteRequest,
+    removeMemberRequest
 } from '../requests.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
 // Socket io connection with server
 const socket = socketIOClient(api);
 
-// socket.on(`message`, (message) => {
-//     console.log("MESSAGE: ", message);
-// })
-
-
-
-    // console.log("OK");
-// }
-
-const Grid = ({groupLink, userName}, updatedSocket) => {
+const Grid = ({groupLink, userName, screen}, updatedSocket) => {
     const [timeSlots, setTimeSlots] = useState("");
     const [availability, setAvailability] = useState("");
     const [groupMembers, setGroupMembers] = useState("");
-    const [groupScreen, setGroupScreen] = useState((localStorage.getItem("groupScreen") === 'true'));
+    const [groupScreen, setGroupScreen] = useState(screen);
     const [vote, setVote] = useState(-1);
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         const getGroupInfo = async () => {
@@ -50,18 +48,12 @@ const Grid = ({groupLink, userName}, updatedSocket) => {
         })
     }, [])
 
-    const sendMessage = () => {
-        socket.emit('message', { userName, groupLink });
+    const sendMessage = (message) => {
+        socket.emit('message', { message });
     }
-    const test = () => {
-        console.log("KODJWSIBHBV");
+    const emitUpdate = () => {
+        socket.emit('update');
     }
-
-
-    // socket.on(`update`, (message) => {
-    //     console.log("MESSAGE: ", message);
-    //     renderGrid(groupLink, userName, message);
-    // })
 
     const renderGrid = async (link, name, info) => {
         const gridData = prepareGridData(link, name, info);
@@ -84,9 +76,18 @@ const Grid = ({groupLink, userName}, updatedSocket) => {
 
     const removeUser = (name) => {
         let groups = JSON.parse(localStorage.getItem("groups"));
-        groups[groupLink] = "";
+        delete groups[groupLink];
         localStorage.setItem("groups", JSON.stringify(groups));
         window.location = '/';
+    }
+
+    const removeMember = async (link, member) => {
+        const response = await removeMemberRequest(link, member);
+        if (response.success) {
+            emitUpdate();
+        }
+        console.log(`deleting ${member}`);
+        console.log(response);
     }
 
     const selectTime = (index) => {
@@ -104,36 +105,35 @@ const Grid = ({groupLink, userName}, updatedSocket) => {
         userAvailability = userAvailability.join('');
         const update = await updateAvailabilityRequest(link, name, userAvailability);
         console.log("Update: ", update);
-        emitUpdate(name, link);
+        emitUpdate();
     }
 
     const updateVote = async (link, name, vote) => {
         const updatedVote = await updateVoteRequest(link, name, vote);
         console.log("updatedVote: ", updatedVote);
-        emitUpdate(name, link);
+        emitUpdate();
     }
 
-    const emitUpdate = (name, link) => {
-        socket.emit('update', { 'userName': name, 'groupLink': link });
-    }
-
-    const toggleScreens = (toggle) => {
-        localStorage.setItem("groupScreen", toggle)
-        setGroupScreen(toggle);
+    const toggleScreens = (link, toggle) => {
+        setScreen(link, !toggle);
+        setGroupScreen(!toggle);
     }
 
     if (timeSlots) {
         return (
             <div className="grid-container">
-                <button onClick={() => sendMessage()}>Socket</button>
+                <button disabled={!message.length} onClick={() => sendMessage(message)}>Send Message</button>
+                <input onChange={(e) => setMessage(e.target.value)} type="text" />
                 <div className="grid-days">
                     Monday
                 </div>
                 <div className="grid-times">
                     8am
                 </div>
-                <div className="members">{groupMembers}</div>
-                <button onClick={() => toggleScreens(!groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
+                <div className="members">{groupMembers.map((member, i) =>
+                    <div key={i}>{member}<div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div></div>
+                )}</div>
+                <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
                 {!groupScreen
                 ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
                 : <button onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }

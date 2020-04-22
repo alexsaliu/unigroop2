@@ -26,6 +26,13 @@ const prepareGridData = (link, name, info) => {
     return { allTimeSlots, vote };
 }
 
+const setScreen = (link, toggle) => {
+    let groups = JSON.parse(localStorage.getItem("groups"));
+    groups[link].groupScreen = toggle;
+    localStorage.setItem('groups', JSON.stringify(groups));
+}
+
 module.exports = {
-    prepareGridData
+    prepareGridData,
+    setScreen
 }

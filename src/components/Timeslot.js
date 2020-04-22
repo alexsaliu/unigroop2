@@ -3,7 +3,6 @@ import './grid.css';
 
 const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, info, vote}) => {
     const [selected, setSelected] = useState(availability[index]);
-    const [timeSlotColor, setColor] = useState(info.color);
     const [tapped, setTapped] = useState(false);
 
     const showNames = () => {
@@ -29,7 +28,7 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
     }
     else {
         return (
-            <div className={`${timeSlotColor} timeslot`} onClick={() => {showNames(); handelDoubleTap(index)}}>
+            <div className={`${info.color} timeslot`} onClick={() => {showNames(); handelDoubleTap(index)}}>
                 {info.members + " " + info.votes}
                 {vote == index ? vote : ''}
             </div>

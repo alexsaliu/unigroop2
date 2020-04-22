@@ -78,11 +78,25 @@ const updateAvailabilityRequest = (link, name, availability) => {
     .catch((err) => console.log("Error: ", err))
 }
 
+const removeMemberRequest = (link, member) => {
+    return fetch(`${api}/remove-member`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({link, member})
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        return data;
+    })
+    .catch((err) => console.log("Error: ", err))
+}
+
 module.exports = {
     checkGroupRequest,
     createGroupRequest,
     joinGroupRequest,
     groupInfoRequest,
     updateAvailabilityRequest,
-    updateVoteRequest
+    updateVoteRequest,
+    removeMemberRequest
 };

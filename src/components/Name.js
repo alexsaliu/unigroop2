@@ -13,6 +13,7 @@ const Name = () => {
     const [promptName, setPromptName] = useState(true);
     const [userName, setUserName] = useState("");
     const [checkingGroup, setCheckingGroup] = useState(true);
+    const [groupScreen, setGroupScreen] = useState(false);
 
     useEffect(() => {
         let link = window.location.pathname;
@@ -36,7 +37,8 @@ const Name = () => {
         else {
             let groups = JSON.parse(localStorage.getItem("groups"));
             if (groups[link]) {
-                setUserName(groups[link]);
+                setUserName(groups[link].name);
+                setGroupScreen(groups[link].groupScreen);
                 setPromptName(false);
             }
             else {
@@ -47,7 +49,10 @@ const Name = () => {
 
     const handelSettingName = async (link, name) => {
         let groups = JSON.parse(localStorage.getItem("groups"));
-        groups[link] = name;
+        groups[link] = {'name': "", 'groupScreen': ""};
+        groups[link].name = name;
+        groups[link].groupScreen = false;
+        setGroupScreen(false);
         localStorage.setItem("groups", JSON.stringify(groups));
         setUserName(nameInput);
         const joinedGroup = await joinGroupRequest(link, name);
@@ -72,7 +77,7 @@ const Name = () => {
     else {
         return (
             <div>
-                <Grid groupLink={groupLink} userName={userName} />
+                <Grid groupLink={groupLink} userName={userName} screen={groupScreen} />
             </div>
         );
     }
