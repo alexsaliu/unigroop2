@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import logo from '../assets/logo.png';
+import '../home.css';
 
 import {
     checkGroupRequest,
@@ -50,7 +52,8 @@ const Home = () => {
 
     return (
         <div className="home">
-            <div>Home</div>
+            <div className="logo-container"><img src={logo} alt="Unimeets" /></div>
+            <h1>Unimeets</h1>
             {warning ? <div>{warning}</div> : ''}
             <input onChange={(e) => setGroupLink(e.target.value)} type="text" />
             <button onClick={() => checkGroup(groupLink)}>Submit</button>

@@ -1,13 +1,21 @@
+@font-face {
+  font-family: 'Manjari';
+  src: url('./assets/Manjari-Regular.ttf')  format('truetype');
+}
+@font-face {
+  font-family: 'Manjari-Bold';
+  src: url('./assets/Manjari-Bold.ttf')  format('truetype');
+}
+@font-face {
+  font-family: 'Manjari-Thin';
+  src: url('./assets/Manjari-Thin.ttf')  format('truetype');
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Manjari', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
 }
