@@ -6,3 +6,73 @@ h1 {
     font-family: 'Manjari-Thin';
     margin: 0.5rem;
 }
+
+.home {
+    padding: 2rem;
+    height: 100vh;
+}
+
+.home-input {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 0.7rem;
+}
+
+.main-btn {
+    width: 100%;
+    margin: 0.5rem 0;
+    border: none;
+    height: 5rem;
+    border-radius: 1rem;
+    background: #fdfdfd;
+    font-size: 1.5rem;
+    box-shadow: 1px 1px 6px -3px grey;
+    padding-top: 0.4rem;
+    display: flex;
+    justify-content: center;
+    color: grey;
+}
+
+.signin-icon, .users-icon {
+    color: var(--blue);
+}
+
+.home-form {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 2rem;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    padding-bottom: 0;
+}
+
+.group-type-button {
+    border-radius: 0.7rem;
+    padding: 0.5rem;
+    width: 8rem;
+    border: none;
+    margin: 0.5rem 1rem 0 1rem;
+    padding-top: 0.7rem;
+    background: none;
+    box-shadow: 1px 1px 0px 1px lightgrey;
+    transform: translate(0px, 0px);
+    transition: transform 0.1s;
+}
+
+/* .private {
+    background: #ff8e8e;
+    border: none;
+    box-shadow: inset 2px 2px 3px #9e5757;
+    transform: translate(1px, 1px);
+} */
+
+.private, .public {
+    background: #75cdff;
+    border: none;
+    box-shadow: inset 2px 2px 3px #5597bd;
+    transform: translate(1px, 1px);
+    color: white;
+}

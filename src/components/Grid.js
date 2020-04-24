@@ -14,7 +14,7 @@ import {
     removeMemberRequest
 } from '../requests.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
@@ -133,7 +133,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                     8am
                 </div>
                 <div className="members">{groupMembers.map((member, i) =>
-                    <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faStar} /></div>}</div>
+                    <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
                 )}</div>
                 <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
                 {!groupScreen

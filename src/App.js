@@ -1,6 +1,6 @@
 import React, {useState, useEffect, Suspense} from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import './App.css';
+import './index.css';
 
 import Header from './components/Header';
 import Name from './components/Name';

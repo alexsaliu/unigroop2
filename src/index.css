@@ -11,6 +11,17 @@
   src: url('./assets/Manjari-Thin.ttf')  format('truetype');
 }
 
+:root {
+    --green: #67ff7f;
+    --blue: #75cdff;
+    --yellow: #fff966;
+    --red: #ff8e8e;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: 'Manjari', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -18,4 +29,48 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body, html, #root, .App {
+    height: 100%;
+}
+
+.App {
+  text-align: center;
+}
+
+button {
+    font-family: 'Manjari';
+}
+
+input:focus, input:active {
+    outline: none;
+    box-shadow: 0px 0px 4px 0px #75cdff;
+    border: 1px solid transparent;
+}
+
+button:focus, button:active {
+    outline: none
+}
+
+.error {
+    color: red;
+}
+
+@media {max-width: 768px} {
+    html {
+        font-size: 12px;
+    }
+}
+
+@media {max-width: 1050px} {
+    html {
+        font-size: 14px;
+    }
+}
+
+@media {min-width: 1051px} {
+    html {
+        font-size: 16px;
+    }
 }
