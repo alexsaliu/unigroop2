@@ -1,0 +1,31 @@
+.name-section {
+    padding: 2rem;
+}
+
+.name-section input {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    border-radius: 0.7rem;
+}
+
+.name-title {
+    font-size: 1.4rem;
+    margin: 2rem 1rem 0.5rem;
+    color: grey;
+}
+
+.name-title span {
+    color: #11e232;
+}
+
+.name-form {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 2rem;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    padding-bottom: 0;
+}

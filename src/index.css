@@ -49,6 +49,10 @@ input:focus, input:active {
     border: 1px solid transparent;
 }
 
+input::placeholder {
+    color: lightgrey;
+}
+
 button:focus, button:active {
     outline: none
 }

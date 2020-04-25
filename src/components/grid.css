@@ -4,6 +4,7 @@
     align-items: center;
     align-content: baseline;
     flex-direction: column;
+    position: relative;
 }
 .grid {
     display: flex;
@@ -32,4 +33,38 @@
 }
 .red {
     background: red;
+}
+
+.grid-header {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.logo-container-grid {
+    display: flex;
+}
+
+.logo-container-grid img {
+    width: 3rem;
+}
+
+.chat-container {
+    background: #e4e4e4;
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    right: -100%;
+}
+
+.chat-container {
+
+}
+
+.grid-section {
+
+}
+
+.grid-footer {
+    position: relative;
 }

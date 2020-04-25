@@ -25,9 +25,11 @@ const Home = () => {
 
     const formatLink = (words) => {
         const link = words.split(' ').join('-');
+        return link;
     }
 
     const checkGroup = async (link) => {
+        link = formatLink(link);
         const check = await checkGroupRequest(link);
         console.log(check);
         if (check.success) {
@@ -60,16 +62,16 @@ const Home = () => {
             <h1>Unimeets</h1>
             <div className="home-form">
                 {warning1 ? <div className="error">{warning1}</div> : ''}
-                <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" />
+                <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Name" />
                 <button className="main-btn create-group" onClick={() => createGroup(userName, privateGroup)}>Create Group &nbsp;<div className="users-icon"><FontAwesomeIcon icon={faSignInAlt} /></div></button>
-                <br/><br/>
-                {warning2 ? <div className="error">{warning2}</div> : ''}
-                <input className="home-input" onChange={(e) => setGroupLink(e.target.value)} type="text" />
-                <button className="main-btn join-group" onClick={() => checkGroup(groupLink)}>Join Group &nbsp;<div className="signin-icon"><FontAwesomeIcon icon={faUsers} /></div></button>
                 <div>
                     <button className={privateGroup ? 'private group-type-button' : 'group-type-button'} onClick={() => setPrivateGroup(true)}>Private</button>
                     <button className={!privateGroup ? 'public group-type-button' : 'group-type-button'} onClick={() => setPrivateGroup(false)}>Public</button>
                 </div>
+                <br/><br/>
+                {warning2 ? <div className="error">{warning2}</div> : ''}
+                <input className="home-input" onChange={(e) => setGroupLink(e.target.value)} type="text" placeholder="your-group-link" />
+                <button className="main-btn join-group" onClick={() => checkGroup(groupLink)}>Join Group &nbsp;<div className="signin-icon"><FontAwesomeIcon icon={faUsers} /></div></button>
             </div>
         </div>
     );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import socketIOClient from 'socket.io-client';
 import './grid.css';
 import Timeslot from './Timeslot.js';
+import logo from '../assets/logo.png';
 import {
     prepareGridData,
     setScreen
@@ -14,7 +15,7 @@ import {
     removeMemberRequest
 } from '../requests.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCommentDots } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
@@ -29,6 +30,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [vote, setVote] = useState(-1);
     const [admin, setAdmin] = useState(false);
     const [message, setMessage] = useState("");
+    const [chatOpen, setChatOpen] = useState(false)
 
     useEffect(() => {
         const getGroupInfo = async () => {
@@ -124,34 +126,47 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     if (timeSlots) {
         return (
             <div className="grid-container">
-                <button disabled={!message.length} onClick={() => sendMessage(message)}>Send Message</button>
-                <input onChange={(e) => setMessage(e.target.value)} type="text" />
-                <div className="grid-days">
-                    Monday
+                <div className="grid-section">
+                    <div className="grid-header">
+                        <div className="logo-container-grid"><img src={logo} alt="Unimeets" /></div>
+                    </div>
+                    <div className="grid-days">
+                        Monday
+                    </div>
+                    <div className="grid-times">
+                        8am
+                    </div>
+                    <div className="members">{groupMembers.map((member, i) =>
+                        <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
+                    )}</div>
+                    <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
+                    {!groupScreen
+                    ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
+                    : <button onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
+                    <div className="grid">
+                        {timeSlots.map((timeSlot, i) =>
+                            <Timeslot
+                                key={i}
+                                index={i}
+                                info={timeSlot}
+                                selectTime={selectTime}
+                                groupScreen={groupScreen}
+                                availability={availability}
+                                selectVote={selectVote}
+                                vote={vote}
+                            />
+                        )}
+                    </div>
+                    <div className="grid-footer">
+                        <div onClick={() => setChatOpen(true)} className="chat-icon">
+                            <FontAwesomeIcon icon={faCommentDots} />
+                        </div>
+                    </div>
                 </div>
-                <div className="grid-times">
-                    8am
-                </div>
-                <div className="members">{groupMembers.map((member, i) =>
-                    <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
-                )}</div>
-                <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
-                {!groupScreen
-                ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
-                : <button onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
-                <div className="grid">
-                    {timeSlots.map((timeSlot, i) =>
-                        <Timeslot
-                            key={i}
-                            index={i}
-                            info={timeSlot}
-                            selectTime={selectTime}
-                            groupScreen={groupScreen}
-                            availability={availability}
-                            selectVote={selectVote}
-                            vote={vote}
-                        />
-                    )}
+                <div className="chat-container">
+                    <button disabled={!message.length} onClick={() => sendMessage(message)}>Send Message</button>
+                    <input onChange={(e) => setMessage(e.target.value)} type="text" />
+                    <div onClick={() => setChatOpen(false)}>BACK</div>
                 </div>
             </div>
         );

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './grid.css';
+import './name.css';
 import Grid from './Grid.js';
+import logo from '../assets/logo.png';
 import { randomNameGenerator } from '../helpers.js';
 import {
     checkGroupRequest,
@@ -86,13 +88,18 @@ const Name = () => {
     }
     else if (promptName) {
         return (
-            <div>
-                {privateGroup ?
-                    <input onChange={(e) => setNameInput(e.target.value)} type="text" /> :
-                    <div onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</div>
-                }
-                {warning ? <div>{warning}</div> : ''}
-                <button onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>
+            <div className="name-section">
+                <div className="logo-container"><img src={logo} alt="Unimeets" /></div>
+                <h1>Unimeets</h1>
+                <div className="name-form">
+                    <div className="name-title">Joining: &nbsp;<span>{groupLink}</span></div>
+                    {privateGroup ?
+                        <input onChange={(e) => setNameInput(e.target.value)} type="text" placeholder="Name" /> :
+                        <div onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</div>
+                    }
+                    {warning ? <div>{warning}</div> : ''}
+                    <button className="main-btn" onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>
+                </div>
             </div>
         );
     }
