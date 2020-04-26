@@ -167,6 +167,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                             availability={availability}
                             selectVote={selectVote}
                             vote={vote}
+                            numOfMembers={groupMembers.length}
                         />
                     )}
                 </div>

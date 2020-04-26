@@ -95,6 +95,14 @@
     width: 100%;
     border-radius: 20px;
     padding-top: 0.2rem;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeslot span {
+    font-size: 0.6rem;
 }
 
 .timeslot-container {
