@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import socketIOClient from 'socket.io-client';
 import './grid.css';
 import Timeslot from './Timeslot.js';
@@ -15,7 +15,7 @@ import {
     removeMemberRequest
 } from '../requests.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCommentDots } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCommentDots, faUsers, faLink } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
@@ -29,8 +29,11 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [groupScreen, setGroupScreen] = useState(screen);
     const [vote, setVote] = useState(-1);
     const [admin, setAdmin] = useState(false);
-    const [message, setMessage] = useState("");
-    const [chatOpen, setChatOpen] = useState(false)
+    const [message, setMessage] = useState(false);
+    const [chatOpen, setChatOpen] = useState(false);
+    const [membersOpen, setMembersOpen] = useState(false);
+
+    const textAreaRef = useRef(null);
 
     useEffect(() => {
         const getGroupInfo = async () => {
@@ -123,51 +126,66 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         setGroupScreen(!toggle);
     }
 
+    const selectLink = (ok) => {
+        textAreaRef.current.select();
+        document.execCommand('copy');
+        console.log("Success: ");
+    }
+
     if (timeSlots) {
         return (
             <div className="grid-container">
-                <div className="grid-section">
-                    <div className="grid-header">
-                        <div className="logo-container-grid"><img src={logo} alt="Unimeets" /></div>
+                <div className="grid-header">
+                    <div className="logo-container-grid"><img src={logo} alt="Unimeets" /></div>
+                    <div onClick={() => selectLink("ok")} className="group-link">
+                         <textarea readOnly ref={textAreaRef} value={`${window.location}`} />{groupLink} &nbsp; <FontAwesomeIcon icon={faLink} />
                     </div>
-                    <div className="grid-days">
-                        Monday
-                    </div>
-                    <div className="grid-times">
-                        8am
-                    </div>
+                    <div className="members-icon"><FontAwesomeIcon icon={faUsers} /><span>{groupMembers.length}</span></div>
+                </div>
+                {membersOpen ? <div className="members-container">
                     <div className="members">{groupMembers.map((member, i) =>
                         <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
                     )}</div>
+                    <div onClick={() => setMembersOpen(false)}>BACK</div>
+                </div> : ''}
+                <div className="grid-days">
+                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((item, i) => <div key={i}>{item}</div>)}
+                </div>
+                <div className="grid">
+                    <div className="grid-times">
+                        {['8', '', '9', '', '10', '', '11', '', '12', '', '1', '', '2', '', '3', '', '4', '', '5', '', '6', '', '7']
+                        .map((item, i) => <div key={i}>{item}</div>)
+                        }
+                    </div>
+                    {timeSlots.map((timeSlot, i) =>
+                        <Timeslot
+                            key={i}
+                            index={i}
+                            info={timeSlot}
+                            selectTime={selectTime}
+                            groupScreen={groupScreen}
+                            availability={availability}
+                            selectVote={selectVote}
+                            vote={vote}
+                        />
+                    )}
+                </div>
+                <div className="grid-footer">
                     <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
                     {!groupScreen
                     ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
                     : <button onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
-                    <div className="grid">
-                        {timeSlots.map((timeSlot, i) =>
-                            <Timeslot
-                                key={i}
-                                index={i}
-                                info={timeSlot}
-                                selectTime={selectTime}
-                                groupScreen={groupScreen}
-                                availability={availability}
-                                selectVote={selectVote}
-                                vote={vote}
-                            />
-                        )}
-                    </div>
-                    <div className="grid-footer">
-                        <div onClick={() => setChatOpen(true)} className="chat-icon">
-                            <FontAwesomeIcon icon={faCommentDots} />
-                        </div>
+                    <div onClick={() => setChatOpen(false)} className="chat-icon">
+                        <FontAwesomeIcon icon={faCommentDots} />
+                        <br/>
+                        <span style={{'fontSize': '0.6rem'}}>coming soon</span>
                     </div>
                 </div>
-                <div className="chat-container">
+                {chatOpen ? <div className="chat-container">
                     <button disabled={!message.length} onClick={() => sendMessage(message)}>Send Message</button>
                     <input onChange={(e) => setMessage(e.target.value)} type="text" />
                     <div onClick={() => setChatOpen(false)}>BACK</div>
-                </div>
+                </div> : ''}
             </div>
         );
     }

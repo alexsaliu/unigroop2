@@ -95,7 +95,7 @@ const Name = () => {
                     <div className="name-title">Joining: &nbsp;<span>{groupLink}</span></div>
                     {privateGroup ?
                         <input onChange={(e) => setNameInput(e.target.value)} type="text" placeholder="Name" /> :
-                        <div onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</div>
+                        <button className="main-btn generate-name" onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</button>
                     }
                     {warning ? <div>{warning}</div> : ''}
                     <button className="main-btn" onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>

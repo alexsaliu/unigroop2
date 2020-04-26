@@ -29,3 +29,10 @@
     padding: 2rem;
     padding-bottom: 0;
 }
+
+button.generate-name {
+    background: white;
+    color: black;
+    box-shadow: none;
+    border: 3px dashed #13e234;
+}
