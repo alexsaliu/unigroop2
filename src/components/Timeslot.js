@@ -21,16 +21,20 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
 
     if (!groupScreen) {
         return (
-            <div className={selected ? 'green timeslot' : 'timeslot'} onClick={() => {selectTime(index); setSelected(!selected)}}>
-                {""}
+            <div className="timeslot-container">
+                <div className={selected ? 'green timeslot' : 'timeslot'} onClick={() => {selectTime(index); setSelected(!selected)}}>
+                    {""}
+                </div>
             </div>
         );
     }
     else {
         return (
-            <div className={`${info.color} timeslot`} onClick={() => {showNames(); handelDoubleTap(index)}}>
-                {info.members + " " + info.votes}
-                {vote == index ? vote : ''}
+            <div className="timeslot-container">
+                <div className={`${info.color} timeslot`} onClick={() => {showNames(); handelDoubleTap(index)}}>
+                    {info.members + " " + info.votes}
+                    {vote == index ? vote : ''}
+                </div>
             </div>
         );
     }

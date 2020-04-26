@@ -2,9 +2,10 @@
     position: relative;
     display: flex;
     width: 100%;
+    height: 100%;
     flex-direction: column;
     align-items: center;
-    padding: 0.2rem 1.5rem;
+    padding: 0.2rem 2rem;
 }
 
 .grid-header {
@@ -13,6 +14,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    height: 3rem;
 }
 
 .logo-container-grid {
@@ -82,17 +84,26 @@
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    height: 80vh;
+    height: calc(100% - 9rem);
     align-content: baseline;
     position: relative;
 }
 
 .timeslot {
     background: #e6e6e6;
-    height: 2.8%;
-    width: 12%;
-    margin: 1%;
+    height: 100%;
+    width: 100%;
     border-radius: 20px;
+    padding-top: 0.2rem;
+}
+
+.timeslot-container {
+    width: calc(100%/7);
+    height: calc(100%/24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
 }
 
 .green {
@@ -109,14 +120,15 @@
 }
 
 .grid-days {
-    width: 90%;
+    width: 100%;
     display: flex;
     font-size: 0.8rem;
+    height: 1rem;
 }
 
 .grid-days div {
     width: 12%;
-    margin: 1%;
+    margin: 0 1%;
 }
 
 .grid-times {
@@ -131,7 +143,7 @@
 }
 
 .grid-times div {
-    height: 2.8%;
+    min-height: calc(100%/24);
     transform: translateX(-1.2rem);
     width: 1rem;
     text-align: center;
@@ -139,15 +151,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 1%;
     font-size: 0.7rem;
 }
 
 .grid-footer {
     position: relative;
     width: 100%;
-    padding: 0 1rem;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-between;
+    margin-top: 1rem;
+    height: 3rem;
+}
+
+.switch-view-button {
+    background: white;
+    border: 1px solid #19ea3a;
+    border-radius: 20px;
+    padding: 0.4rem 0.6rem 0.2rem;
+    color: grey;
+}
+
+.update-button {
+    background: #000000;
+    border: 1px solid #000000;
+    border-radius: 20px;
+    padding: 0.4rem 0.6rem 0.2rem;
+    color: white;
+    box-shadow: 1px 1px 3px 0px grey;
 }

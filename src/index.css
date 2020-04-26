@@ -31,8 +31,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body, html, #root, .App {
+body, html, #root, .App, #grid {
     height: 100%;
+}
+
+#grid {
+    display: flex;
+    justify-content: center;
 }
 
 .App {

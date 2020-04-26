@@ -15,7 +15,7 @@ import {
     removeMemberRequest
 } from '../requests.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCommentDots, faUsers, faLink } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCommentDots, faUsers, faLink, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
@@ -171,10 +171,16 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                     )}
                 </div>
                 <div className="grid-footer">
-                    <button onClick={() => toggleScreens(groupLink, groupScreen)}>{groupScreen ? "Change Availability" : "View Group"}</button>
+                    <button className="switch-view-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
+                        {groupScreen ? <FontAwesomeIcon icon={faArrowLeft} /> : ''}
+                        &nbsp;
+                        {groupScreen ? "Change Availability" : "View Group"}
+                        &nbsp;
+                        {groupScreen ? '' : <FontAwesomeIcon icon={faArrowRight} />}
+                    </button>
                     {!groupScreen
-                    ? <button onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
-                    : <button onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
+                    ? <button className="update-button" onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
+                    : <button className="update-button" onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
                     <div onClick={() => setChatOpen(false)} className="chat-icon">
                         <FontAwesomeIcon icon={faCommentDots} />
                         <br/>

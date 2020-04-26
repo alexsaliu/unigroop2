@@ -105,7 +105,7 @@ const Name = () => {
     }
     else {
         return (
-            <div>
+            <div id="grid">
                 <Grid groupLink={groupLink} userName={userName} screen={groupScreen} privateGroup={privateGroup} />
             </div>
         );
