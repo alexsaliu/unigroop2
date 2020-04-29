@@ -84,6 +84,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
 
     const removeUser = (name) => {
         let groups = JSON.parse(localStorage.getItem("groups"));
+        console.log("REMOVED BITCH");
         delete groups[groupLink];
         localStorage.setItem("groups", JSON.stringify(groups));
         window.location = '/';

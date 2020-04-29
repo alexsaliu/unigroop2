@@ -35,7 +35,7 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
     if (!groupScreen) {
         return (
             <div className="timeslot-container">
-                <div className={selected ? 'green timeslot' : 'timeslot'} onClick={() => {selectTime(index); setSelected(!selected)}}>
+                <div className={selected ? 'grey timeslot' : 'timeslot'} onClick={() => {selectTime(index); setSelected(!selected)}}>
                     {""}
                 </div>
             </div>
