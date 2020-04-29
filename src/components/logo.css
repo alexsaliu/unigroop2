@@ -1,0 +1,64 @@
+.logo {
+    width: 125%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    transform: translateX(5%);
+}
+
+.logo-line {
+    width: 12%;
+    margin: 0% 5.5%;
+    transform: rotate(310deg);
+    height: 100%;
+    border-radius: 1000px;
+}
+
+.logo-line.green {
+    height: 65%;
+    transform: rotate(310deg) translateY(28%);
+    background: #67FF7F;
+}
+
+.logo-line.yellow {
+    height: 65%;
+    transform: rotate(310deg) translateY(-30%);
+    background: #FFF966;
+}
+
+.logo-line.red {
+    height: 25%;
+    transform: rotate(310deg) translateY(-157%);
+    background: #FF8E8E;
+}
+
+.logo-line.blue {
+    background: #75CDFF;
+}
+
+.spin .logo-line.green {
+    animation: spin 1.2s linear infinite;
+}
+.spin .logo-line.blue {
+    animation: spin 3s linear infinite;
+}
+.spin .logo-line.yellow {
+    animation: spin 0.5s linear infinite;
+}
+.spin .logo-line.red {
+    animation: spin 0.9s linear infinite;
+}
+
+.loading {
+    position: absolute;
+    left: 20%;
+    text-align: center;
+    bottom: 0;
+    color: grey;
+}
+
+@keyframes spin {
+    0% {transform: rotate(310deg)}
+    100% {transform: rotate(670deg)}
+
+}

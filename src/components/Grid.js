@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import socketIOClient from 'socket.io-client';
 import './grid.css';
 import Timeslot from './Timeslot.js';
-import logo from '../assets/logo.png';
+import Logo from './Logo.js';
 import {
     prepareGridData,
     setScreen
@@ -32,6 +32,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [message, setMessage] = useState(false);
     const [chatOpen, setChatOpen] = useState(false);
     const [membersOpen, setMembersOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const textAreaRef = useRef(null);
 
@@ -89,7 +90,9 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     }
 
     const removeMember = async (link, member) => {
+        setLoading(true);
         const response = await removeMemberRequest(link, member);
+        setLoading(false);
         if (response.success) {
             emitUpdate();
         }
@@ -110,13 +113,17 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
 
     const updateAvailability = async (link, name, userAvailability) => {
         userAvailability = userAvailability.join('');
+        setLoading(true);
         const update = await updateAvailabilityRequest(link, name, userAvailability);
+        setLoading(false);
         console.log("Update: ", update);
         emitUpdate();
     }
 
     const updateVote = async (link, name, vote) => {
+        setLoading(true);
         const updatedVote = await updateVoteRequest(link, name, vote);
+        setLoading(false);
         console.log("updatedVote: ", updatedVote);
         emitUpdate();
     }
@@ -136,7 +143,11 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         return (
             <div className="grid-container">
                 <div className="grid-header">
-                    <div className="logo-container-grid"><img src={logo} alt="Unimeets" /></div>
+                    <a href="/">
+                        <div className="logo-container-grid">
+                            <Logo loading={loading} />
+                        </div>
+                    </a>
                     <div onClick={() => selectLink("ok")} className="group-link">
                          <textarea readOnly ref={textAreaRef} value={`${window.location}`} />{groupLink} &nbsp; <FontAwesomeIcon icon={faLink} />
                     </div>

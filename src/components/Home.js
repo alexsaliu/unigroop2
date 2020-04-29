@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import logo from '../assets/logo.png';
 import '../home.css';
+import Logo from './Logo.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUsers, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
@@ -16,6 +16,7 @@ const Home = () => {
     const [warning1, setWarning1] = useState("");
     const [warning2, setWarning2] = useState("");
     const [privateGroup, setPrivateGroup] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (!localStorage.getItem("groups")) {
@@ -30,7 +31,9 @@ const Home = () => {
 
     const checkGroup = async (link) => {
         link = formatLink(link);
+        setLoading(true);
         const check = await checkGroupRequest(link);
+        setLoading(false);
         console.log(check);
         if (check.success) {
             window.location = `/${link}`;
@@ -45,7 +48,9 @@ const Home = () => {
             setWarning1("Name must be at least 2 characters");
         }
         else {
+            setLoading(true);
             const group = await createGroupRequest(name, privateGroup);
+            setLoading(false);
             console.log(group);
             let groups = JSON.parse(localStorage.getItem("groups"));
             groups[group.group_link] = {'name': "", 'groupScreen': ""};;
@@ -58,7 +63,7 @@ const Home = () => {
 
     return (
         <div className="home">
-            <div className="logo-container"><img src={logo} alt="Unimeets" /></div>
+            <div className="logo-container"><Logo loading={loading} /></div>
             <h1>Unimeets</h1>
             <div className="home-form">
                 {warning1 ? <div className="error">{warning1}</div> : ''}

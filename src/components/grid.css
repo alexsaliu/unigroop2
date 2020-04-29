@@ -18,7 +18,8 @@
 }
 
 .logo-container-grid {
-    display: flex;
+    width: 3rem;
+    height: 3rem;
 }
 
 .logo-container-grid img {
@@ -112,16 +113,17 @@
     align-items: center;
     justify-content: center;
     padding: 0.3rem;
+    border-radius: 20px;
 }
 
 .green {
     background: lightgreen;
 }
+.blue {
+    background: #75cdff;
+}
 .yellow {
     background: yellow;
-}
-.orange {
-    background: orange;
 }
 .red {
     background: red;
@@ -135,7 +137,7 @@
 }
 
 .grid-days div {
-    width: 12%;
+    width: calc(100% / 7);
     margin: 0 1%;
 }
 

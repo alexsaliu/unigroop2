@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './grid.css';
 import './name.css';
 import Grid from './Grid.js';
-import logo from '../assets/logo.png';
+import Logo from './Logo.js';
 import { randomNameGenerator } from '../helpers.js';
 import {
     checkGroupRequest,
@@ -18,12 +18,15 @@ const Name = () => {
     const [groupScreen, setGroupScreen] = useState(false);
     const [privateGroup, setPrivateGroup] = useState(true);
     const [warning, setWarning] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         let link = window.location.pathname;
         link = link.split('/')[1];
         const checkGroup = async () => {
+            setLoading(true);
             const check = await checkGroupRequest(link);
+            setLoading(false);
             console.log("Group Check: ", check);
             if (!check.success) window.location = '/';
             setGroupLink(link);
@@ -68,7 +71,9 @@ const Name = () => {
             setGroupScreen(false);
             localStorage.setItem("groups", JSON.stringify(groups));
             setUserName(nameInput);
+            setLoading(true);
             const joinedGroup = await joinGroupRequest(link, name, privateGroup);
+            setLoading(false);
             if (joinedGroup.success) {
                 setPromptName(false);
             }
@@ -83,13 +88,21 @@ const Name = () => {
 
     if (checkingGroup) {
         return (
-            <div>Loading...</div>
+            <div className="name-section">
+                <div className="logo-container">
+                    <Logo loading={loading} />
+                </div>
+            </div>
         );
     }
     else if (promptName) {
         return (
             <div className="name-section">
-                <div className="logo-container"><img src={logo} alt="Unimeets" /></div>
+                <a href="/">
+                    <div className="logo-container">
+                        <Logo loading={loading} />
+                    </div>
+                </a>
                 <h1>Unimeets</h1>
                 <div className="name-form">
                     <div className="name-title">Joining: &nbsp;<span>{groupLink}</span></div>
