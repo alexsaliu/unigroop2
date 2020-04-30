@@ -35,16 +35,22 @@ const Home = () => {
         const check = await checkGroupRequest(link);
         setLoading(false);
         console.log(check);
-        if (check.success) {
+        if (check.success === 'error') {
+            setWarning1("");
+            setWarning2("There was an error checking your group");
+        }
+        else if (check.success) {
             window.location = `/${link}`;
         }
         else {
+            setWarning1("");
             setWarning2("Group does not exist");
         }
     }
 
     const createGroup = async (name, privateGroup) => {
         if (userName.length < 2) {
+            setWarning2("");
             setWarning1("Name must be at least 2 characters");
         }
         else {
@@ -52,12 +58,18 @@ const Home = () => {
             const group = await createGroupRequest(name, privateGroup);
             setLoading(false);
             console.log(group);
-            let groups = JSON.parse(localStorage.getItem("groups"));
-            groups[group.group_link] = {'name': "", 'groupScreen': ""};;
-            groups[group.group_link].name = name;
-            groups[group.group_link].groupScreen = false;
-            localStorage.setItem("groups", JSON.stringify(groups));
-            window.location = group.group_link;
+            if (group.success != 'error') {
+                let groups = JSON.parse(localStorage.getItem("groups"));
+                groups[group.group_link] = {'name': "", 'groupScreen': ""};;
+                groups[group.group_link].name = name;
+                groups[group.group_link].groupScreen = false;
+                localStorage.setItem("groups", JSON.stringify(groups));
+                window.location = group.group_link;
+            }
+            else {
+                setWarning2("");
+                setWarning1("There was an error creating your group");
+            }
         }
     }
 
@@ -67,7 +79,7 @@ const Home = () => {
             <h1>Unimeets</h1>
             <div className="home-form">
                 {warning1 ? <div className="error">{warning1}</div> : ''}
-                <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Name" />
+                <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Your Name" />
                 <button className="main-btn create-group" onClick={() => createGroup(userName, privateGroup)}>Create Group &nbsp;<div className="users-icon"><FontAwesomeIcon icon={faSignInAlt} /></div></button>
                 <div>
                     <button className={privateGroup ? 'private group-type-button' : 'group-type-button'} onClick={() => setPrivateGroup(true)}>Private</button>

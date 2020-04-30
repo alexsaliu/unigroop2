@@ -28,7 +28,7 @@ const Name = () => {
             const check = await checkGroupRequest(link);
             setLoading(false);
             console.log("Group Check: ", check);
-            if (!check.success) window.location = '/';
+            if (!check.success || check.success === 'error') window.location = '/';
             setGroupLink(link);
             setCheckingGroup(false);
             if (!check.privateGroup) setPrivateGroup(false);
@@ -74,7 +74,10 @@ const Name = () => {
             setLoading(true);
             const joinedGroup = await joinGroupRequest(link, name, privateGroup);
             setLoading(false);
-            if (joinedGroup.success) {
+            if (joinedGroup.success === 'error') {
+                setWarning("There was an error trying to join your group");
+            }
+            else if (joinedGroup.success) {
                 setPromptName(false);
             }
             console.log(joinedGroup);
@@ -110,7 +113,7 @@ const Name = () => {
                         <input onChange={(e) => setNameInput(e.target.value)} type="text" placeholder="Name" /> :
                         <button className="main-btn generate-name" onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</button>
                     }
-                    {warning ? <div>{warning}</div> : ''}
+                    {warning ? <div className="error">{warning}</div> : ''}
                     <button className="main-btn" onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>
                 </div>
             </div>

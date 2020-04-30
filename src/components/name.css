@@ -11,6 +11,7 @@
     padding: 0.5rem;
     font-size: 1.2rem;
     border-radius: 0.7rem;
+    margin: 1rem 0;
 }
 
 .name-title {
@@ -37,6 +38,10 @@ button.generate-name {
     color: black;
     box-shadow: none;
     border: 3px dashed #13e234;
+}
+
+.error {
+    color: red;
 }
 
 @media (max-width: 576px) {

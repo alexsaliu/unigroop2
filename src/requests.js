@@ -11,7 +11,8 @@ const checkGroupRequest = (link) => {
       return data;
     })
     .catch((err) => {
-        return err;
+        console.log("Error: ", err);
+        return {"success": "error"};
     })
 }
 
@@ -25,7 +26,10 @@ const createGroupRequest = (name, privateGroup) => {
     .then((data) => {
         return data;
     })
-    .catch((err) => console.log("Error: ", err))
+    .catch((err) => {
+        console.log("Error: ", err);
+        return {"success": "error"};
+    })
 }
 
 const joinGroupRequest = (link, name, privateGroup) => {
@@ -38,7 +42,11 @@ const joinGroupRequest = (link, name, privateGroup) => {
     .then((data) => {
         return data;
     })
-    .catch((err) => console.log("Error: ", err))
+    .catch((err) => {
+        console.log("Error: ", err);
+        return {"success": "error"};
+    })
+
 }
 
 const updateVoteRequest = (link, name, vote) => {
@@ -51,7 +59,10 @@ const updateVoteRequest = (link, name, vote) => {
     .then((data) => {
         return data;
     })
-    .catch((err) => console.log("Error: ", err))
+    .catch((err) => {
+        console.log("Error: ", err);
+        return {"success": "error"};
+    })
 }
 
 const groupInfoRequest = (link) => {
@@ -61,7 +72,8 @@ const groupInfoRequest = (link) => {
         return data
     })
     .catch((err) => {
-        return err;
+        console.log("Error: ", err);
+        return {"success": "error"};
     })
 }
 
@@ -75,7 +87,10 @@ const updateAvailabilityRequest = (link, name, availability) => {
     .then((data) => {
         return data;
     })
-    .catch((err) => console.log("Error: ", err))
+    .catch((err) => {
+        console.log("Error: ", err);
+        return {"success": "error"};
+    })
 }
 
 const removeMemberRequest = (link, member) => {
@@ -88,7 +103,10 @@ const removeMemberRequest = (link, member) => {
     .then((data) => {
         return data;
     })
-    .catch((err) => console.log("Error: ", err))
+    .catch((err) => {
+        console.log("Error: ", err);
+        return {"success": "error"};
+    })
 }
 
 module.exports = {

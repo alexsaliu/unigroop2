@@ -23,7 +23,7 @@ const api = 'http://localhost:3001';
 const socket = socketIOClient(api);
 
 const Grid = ({groupLink, userName, screen, privateGroup}) => {
-    const [timeSlots, setTimeSlots] = useState("");
+    const [timeSlots, setTimeSlots] = useState([]);
     const [availability, setAvailability] = useState("");
     const [groupMembers, setGroupMembers] = useState("");
     const [groupScreen, setGroupScreen] = useState(screen);
@@ -33,15 +33,25 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [chatOpen, setChatOpen] = useState(false);
     const [membersOpen, setMembersOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [warning, setWarning] = useState("");
+    const [detailsPopup, setDetailsPopup] = useState("");
+    const [timeMembers, setTimeMembers] = useState([]);
+    const [voteMembers, setVoteMembers] = useState([]);
 
     const textAreaRef = useRef(null);
 
     useEffect(() => {
         const getGroupInfo = async () => {
             const info = await groupInfoRequest(groupLink);
-            console.log("Group Info: ", info);
-            renderGrid(groupLink, userName, info);
-            socket.emit('joinRoom', { userName, groupLink });
+            if (info.success === 'error') {
+                setWarning("There was an error retrieving group info");
+            }
+            else {
+                setWarning("");
+                console.log("Group Info: ", info);
+                renderGrid(groupLink, userName, info);
+                socket.emit('joinRoom', { userName, groupLink });
+            }
         }
         getGroupInfo();
 
@@ -94,10 +104,14 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         setLoading(true);
         const response = await removeMemberRequest(link, member);
         setLoading(false);
-        if (response.success) {
-            emitUpdate();
+        if (response.success === 'error') {
+            setWarning("There was an error removing a member");
         }
-        console.log(`deleting ${member}`);
+        else if (response.success) {
+            setWarning("");
+            emitUpdate();
+            console.log(`deleting ${member}`);
+        }
         console.log(response);
     }
 
@@ -117,16 +131,27 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         setLoading(true);
         const update = await updateAvailabilityRequest(link, name, userAvailability);
         setLoading(false);
+        if (update.success === 'error') {
+            setWarning("There was an error updating your availability");
+        }
+        else {
+            setWarning("");
+            emitUpdate();
+        }
         console.log("Update: ", update);
-        emitUpdate();
     }
 
     const updateVote = async (link, name, vote) => {
         setLoading(true);
         const updatedVote = await updateVoteRequest(link, name, vote);
         setLoading(false);
+        if (updatedVote.success === 'error') {
+            setWarning("There was an error updating your vote");
+        } else {
+            setWarning("");
+            emitUpdate();
+        }
         console.log("updatedVote: ", updatedVote);
-        emitUpdate();
     }
 
     const toggleScreens = (link, toggle) => {
@@ -140,7 +165,12 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         console.log("Success: ");
     }
 
-    if (timeSlots) {
+    const openPopup = (members, votes) => {
+        setDetailsPopup(!detailsPopup);
+        setTimeMembers(members);
+        setVoteMembers(votes);
+    }
+
         return (
             <div className="grid-container">
                 <div className="grid-header">
@@ -154,12 +184,24 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                     </div>
                     <div className="members-icon"><FontAwesomeIcon icon={faUsers} /><span>{groupMembers.length}</span></div>
                 </div>
+
                 {membersOpen ? <div className="members-container">
                     <div className="members">{groupMembers.map((member, i) =>
                         <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
                     )}</div>
                     <div onClick={() => setMembersOpen(false)}>BACK</div>
                 </div> : ''}
+
+                {detailsPopup ?
+                    <div className="details-box">
+                        <div onClick={() => {setDetailsPopup(false)}} className="popup-close">x</div>
+                        <div class="details-container">
+                            {<div className="details-box-members"><span>Members:&nbsp;</span>{}</div>}
+                            {<div className="details-box-votes"><span>Votes:&nbsp;</span>{}</div>}
+                        </div>
+                    </div> : ''
+                }
+
                 <div className="grid-days">
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((item, i) => <div key={i}>{item}</div>)}
                 </div>
@@ -180,9 +222,11 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                             selectVote={selectVote}
                             vote={vote}
                             numOfMembers={groupMembers.length}
+                            openPopup={openPopup}
                         />
                     )}
                 </div>
+                {warning ? <div className="error">{warning}</div> : ''}
                 <div className="grid-footer">
                     <button className="switch-view-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
                         {groupScreen ? <FontAwesomeIcon icon={faArrowLeft} /> : ''}
@@ -207,12 +251,6 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                 </div> : ''}
             </div>
         );
-    }
-    else {
-        return (
-            <div>Loading...</div>
-        );
-    }
 }
 
 export default Grid;
