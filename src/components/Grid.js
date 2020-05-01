@@ -15,7 +15,7 @@ import {
     removeMemberRequest
 } from '../requests.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCommentDots, faUsers, faLink, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCommentDots, faUsers, faLink, faArrowLeft, faArrowRight, faStar, faCircle } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
@@ -25,7 +25,7 @@ const socket = socketIOClient(api);
 const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [timeSlots, setTimeSlots] = useState([]);
     const [availability, setAvailability] = useState("");
-    const [groupMembers, setGroupMembers] = useState("");
+    const [groupMembers, setGroupMembers] = useState([]);
     const [groupScreen, setGroupScreen] = useState(screen);
     const [vote, setVote] = useState(-1);
     const [admin, setAdmin] = useState(false);
@@ -34,9 +34,12 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [membersOpen, setMembersOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [warning, setWarning] = useState("");
-    const [detailsPopup, setDetailsPopup] = useState("");
-    const [timeMembers, setTimeMembers] = useState([]);
+    const [membersPopup, setMembersPopup] = useState(false);
     const [voteMembers, setVoteMembers] = useState([]);
+    const [updateAvailabilityReady, setUpdateAvailabilityReady] = useState(false);
+    const [updateVoteReady, setUpdateVoteReady] = useState(false);
+    const [timeslotMembers, setTimeslotMembers] = useState([]);
+    const [deleteMembers, setDeleteMembers] = useState(false);
 
     const textAreaRef = useRef(null);
 
@@ -100,22 +103,26 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         window.location = '/';
     }
 
-    const removeMember = async (link, member) => {
-        setLoading(true);
-        const response = await removeMemberRequest(link, member);
-        setLoading(false);
-        if (response.success === 'error') {
-            setWarning("There was an error removing a member");
+    const removeMember = async (link, member, confirmation) => {
+        if (confirmation) {
+            console.log("Not saftey");
+            setLoading(true);
+            const response = await removeMemberRequest(link, member);
+            setLoading(false);
+            if (response.success === 'error') {
+                setWarning("There was an error removing a member");
+            }
+            else if (response.success) {
+                setWarning("");
+                emitUpdate();
+                console.log(`deleting ${member}`);
+            }
+            console.log(response);
         }
-        else if (response.success) {
-            setWarning("");
-            emitUpdate();
-            console.log(`deleting ${member}`);
-        }
-        console.log(response);
     }
 
     const selectTime = (index) => {
+        setUpdateAvailabilityReady(true);
         let currentAvailability = availability;
         currentAvailability[index] = !currentAvailability[index] ? 1 : 0;
         setAvailability(currentAvailability);
@@ -123,6 +130,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     }
 
     const selectVote = async (vote) => {
+        setUpdateVoteReady(true);
         setVote(vote);
     }
 
@@ -133,6 +141,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         setLoading(false);
         if (update.success === 'error') {
             setWarning("There was an error updating your availability");
+            setUpdateAvailabilityReady(true);
         }
         else {
             setWarning("");
@@ -147,6 +156,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         setLoading(false);
         if (updatedVote.success === 'error') {
             setWarning("There was an error updating your vote");
+            setUpdateVoteReady(true);
         } else {
             setWarning("");
             emitUpdate();
@@ -159,98 +169,124 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         setGroupScreen(!toggle);
     }
 
-    const selectLink = (ok) => {
+    const selectLink = () => {
         textAreaRef.current.select();
         document.execCommand('copy');
-        console.log("Success: ");
     }
 
-    const openPopup = (members, votes) => {
-        setDetailsPopup(!detailsPopup);
-        setTimeMembers(members);
-        setVoteMembers(votes);
+    const seeMembers = (members, votes) => {
+        // setDetailsPopup(!detailsPopup);
+        setTimeslotMembers(members);
+        // setVoteMembers(votes);
     }
 
-        return (
-            <div className="grid-container">
-                <div className="grid-header">
-                    <a href="/">
-                        <div className="logo-container-grid">
-                            <Logo loading={loading} />
-                        </div>
-                    </a>
-                    <div onClick={() => selectLink("ok")} className="group-link">
-                         <textarea readOnly ref={textAreaRef} value={`${window.location}`} />{groupLink} &nbsp; <FontAwesomeIcon icon={faLink} />
+    return (
+        <div className="grid-container">
+            <div className="grid-header">
+                <a href="/">
+                    <div className="logo-container-grid">
+                        <Logo loading={loading} />
                     </div>
-                    <div className="members-icon"><FontAwesomeIcon icon={faUsers} /><span>{groupMembers.length}</span></div>
+                </a>
+                <div onClick={() => selectLink()} className="group-link">
+                     <textarea readOnly ref={textAreaRef} value={`${window.location}`} />{groupLink} &nbsp; <FontAwesomeIcon icon={faLink} />
                 </div>
+                <div className="members-icon" onClick={() => setMembersPopup(!membersPopup)}><FontAwesomeIcon icon={faUsers} /><span>{groupMembers.length}</span></div>
+            </div>
 
-                {membersOpen ? <div className="members-container">
-                    <div className="members">{groupMembers.map((member, i) =>
-                        <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
-                    )}</div>
-                    <div onClick={() => setMembersOpen(false)}>BACK</div>
-                </div> : ''}
+            <div className="timeslot-members">{timeslotMembers}</div>
 
-                {detailsPopup ?
-                    <div className="details-box">
-                        <div onClick={() => {setDetailsPopup(false)}} className="popup-close">x</div>
-                        <div class="details-container">
-                            {<div className="details-box-members"><span>Members:&nbsp;</span>{}</div>}
-                            {<div className="details-box-votes"><span>Votes:&nbsp;</span>{}</div>}
+            {membersOpen ? <div className="members-container">
+                <div className="members">{groupMembers.map((member, i) =>
+                    <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
+                )}</div>
+                <div onClick={() => setMembersOpen(false)}>BACK</div>
+            </div> : ''}
+
+            {membersPopup ?
+                <div className="details-box">
+                    {!privateGroup && !admin ? '' :
+                        <div onClick={() => {setDeleteMembers(!deleteMembers)}} className={deleteMembers ? "delete-members delete-on" : "delete-members delete-off"}>Remove Members {deleteMembers ? "on" : "off"}</div>
+                    }
+                    <div onClick={() => {setMembersPopup(false)}} className="popup-close">x</div>
+                    <div className="details-container">
+                        <div className="details-box-members">
+                            {groupMembers.map((member, i) =>
+                                <div key={i} className="popup-member">
+                                    <div className="popup-member-name">{member}</div>
+                                    <div className="popup-member-delete">
+                                        {!privateGroup && !admin ? '' :
+                                            <div onClick={() => removeMember(groupLink, member, deleteMembers)} className="trash-icon" style={{color: deleteMembers ? '' : 'grey'}}><FontAwesomeIcon icon={faTrash} /></div>
+                                        }
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    </div> : ''
-                }
-
-                <div className="grid-days">
-                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((item, i) => <div key={i}>{item}</div>)}
-                </div>
-                <div className="grid">
-                    <div className="grid-times">
-                        {['8', '', '9', '', '10', '', '11', '', '12', '', '1', '', '2', '', '3', '', '4', '', '5', '', '6', '', '7']
-                        .map((item, i) => <div key={i}>{item}</div>)
-                        }
+                        {/* {<div className="details-box-votes"><span>Votes:&nbsp;</span>{}</div>} */}
                     </div>
-                    {timeSlots.map((timeSlot, i) =>
-                        <Timeslot
-                            key={i}
-                            index={i}
-                            info={timeSlot}
-                            selectTime={selectTime}
-                            groupScreen={groupScreen}
-                            availability={availability}
-                            selectVote={selectVote}
-                            vote={vote}
-                            numOfMembers={groupMembers.length}
-                            openPopup={openPopup}
-                        />
-                    )}
+                </div> : ''
+            }
+
+            <div className="grid-days">
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((item, i) => <div key={i}>{item}</div>)}
+            </div>
+            <div className="grid">
+                <div className="grid-times">
+                    {['8', '', '9', '', '10', '', '11', '', '12', '', '1', '', '2', '', '3', '', '4', '', '5', '', '6', '', '7']
+                    .map((item, i) => <div key={i}>{item}</div>)
+                    }
                 </div>
-                {warning ? <div className="error">{warning}</div> : ''}
-                <div className="grid-footer">
-                    <button className="switch-view-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
-                        {groupScreen ? <FontAwesomeIcon icon={faArrowLeft} /> : ''}
-                        &nbsp;
-                        {groupScreen ? "Change Availability" : "View Group"}
-                        &nbsp;
-                        {groupScreen ? '' : <FontAwesomeIcon icon={faArrowRight} />}
-                    </button>
-                    {!groupScreen
-                    ? <button className="update-button" onClick={() => updateAvailability(groupLink, userName, availability)}>Update Availability</button>
-                    : <button className="update-button" onClick={() => updateVote(groupLink, userName, vote)}>Update Vote</button> }
-                    <div onClick={() => setChatOpen(false)} className="chat-icon">
+                {timeSlots.map((timeSlot, i) =>
+                    <Timeslot
+                        key={i}
+                        index={i}
+                        info={timeSlot}
+                        selectTime={selectTime}
+                        groupScreen={groupScreen}
+                        availability={availability}
+                        selectVote={selectVote}
+                        vote={vote}
+                        numOfMembers={groupMembers.length}
+                        seeMembers={seeMembers}
+                    />
+                )}
+            </div>
+            {warning ? <div className="error">{warning}</div> : ''}
+            <div className="grid-footer">
+                <div className="footer-section">
+                    <div className="switch-view-button footer-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
+                        <div>{groupScreen ? <FontAwesomeIcon icon={faArrowLeft} /> : <FontAwesomeIcon icon={faArrowRight} />}</div>
+                        <div className="footer-text">View<br/>{groupScreen ? "Availability" : "Group"}</div>
+                    </div>
+                </div>
+
+                <div className="footer-section">
+                    {groupScreen
+                        ? <div style={{color: updateVoteReady ? '' : 'lightgrey'}} className="update-button vote footer-button" onClick={() => {setUpdateVoteReady(false); updateVote(groupLink, userName, vote)}}>
+                            <div><FontAwesomeIcon icon={faStar} /></div>
+                            <div className="footer-text">Update<br/>Vote</div>
+                        </div>
+                        : <div style={{color: updateAvailabilityReady ? '' : 'lightgrey'}} className="update-button availability footer-button" onClick={() => {setUpdateAvailabilityReady(false); updateAvailability(groupLink, userName, availability)}}>
+                            <div><FontAwesomeIcon icon={faCircle} /></div>
+                            <div className="footer-text">Update<br/>Availability</div>
+                        </div>
+                    }
+                </div>
+                <div className="footer-section">
+                    <div onClick={() => setChatOpen(false)} className="chat-icon footer-button">
                         <FontAwesomeIcon icon={faCommentDots} />
                         <br/>
-                        <span style={{'fontSize': '0.6rem'}}>coming soon</span>
+                        <span className="footer-text">coming soon</span>
                     </div>
                 </div>
-                {chatOpen ? <div className="chat-container">
-                    <button disabled={!message.length} onClick={() => sendMessage(message)}>Send Message</button>
-                    <input onChange={(e) => setMessage(e.target.value)} type="text" />
-                    <div onClick={() => setChatOpen(false)}>BACK</div>
-                </div> : ''}
             </div>
-        );
+            {chatOpen ? <div className="chat-container">
+                <button disabled={!message.length} onClick={() => sendMessage(message)}>Send Message</button>
+                <input onChange={(e) => setMessage(e.target.value)} type="text" />
+                <div onClick={() => setChatOpen(false)}>BACK</div>
+            </div> : ''}
+        </div>
+    );
 }
 
 export default Grid;

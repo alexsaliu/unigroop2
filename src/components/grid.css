@@ -1,3 +1,7 @@
+.members-icon {
+    cursor: pointer;
+}
+
 .grid-container {
     position: relative;
     display: flex;
@@ -10,7 +14,7 @@
 
 .grid-header {
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -54,6 +58,13 @@
     font-size: 0.5rem;
 }
 
+.timeslot-members {
+    margin: 0 0 0.5rem;
+    height: 1rem;
+    font-size: 0.8rem;
+    color: grey;
+}
+
 .chat-container {
     background: #e4e4e4;
     height: 100%;
@@ -77,15 +88,11 @@
     color: grey;
 }
 
-.grid-footer {
-    position: relative;
-}
-
 .grid {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    height: calc(100% - 11rem);
+    height: calc(100% - 12rem);
     align-content: baseline;
     position: relative;
     margin-bottom: 1rem;
@@ -123,16 +130,16 @@
 }
 
 .green {
-    background: lightgreen;
+    background: #7aef8d;
 }
 .blue {
     background: #75cdff;
 }
 .yellow {
-    background: yellow;
+    background: #ffed55;
 }
 .red {
-    background: red;
+    background: #ff8e8e;
 }
 
 .grid-days {
@@ -171,29 +178,49 @@
 }
 
 .grid-footer {
-    position: relative;
+    position: absolute;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
     height: 3rem;
+    bottom: 0;
+    padding: 2rem;
+    border-top: 1px solid lightgrey;
+    border-radius: 1rem;
+    border-radius: 1.5rem;
 }
 
 .switch-view-button {
-    background: white;
-    border: 1px solid #19ea3a;
-    border-radius: 20px;
     padding: 0.4rem 0.6rem 0.2rem;
-    color: grey;
+    color: black;
 }
 
 .update-button {
-    background: #000000;
-    border: 1px solid #000000;
     border-radius: 20px;
     padding: 0.4rem 0.6rem 0.2rem;
-    color: white;
-    box-shadow: 1px 1px 3px 0px grey;
+}
+
+.update-button.vote {
+    color: #8061dc;
+}
+.update-button.availability {
+    color: #27e044;
+}
+
+.footer-section {
+    width: 33.3%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-button {
+    cursor: pointer;
+}
+
+.footer-text {
+    font-size: 0.7rem;
 }
 
 .details-box {
@@ -201,18 +228,13 @@
     top: 10rem;
     z-index: 10;
     background: white;
-    padding: 0.5rem;
+    padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0px 0px 5px 2px lightgrey;
     font-size: 0.8rem;
     text-align: left;
-    width: 10rem;
+    width: 12rem;
     max-height: 20rem;
-}
-
-.details-box span {
-    font-weight: bold;
-    color: grey;
 }
 
 .details-box-members {
@@ -236,9 +258,40 @@
     border-radius: 10rem;
     box-shadow: 0px 0px 3px 1px lightgrey;
     color: grey;
+    cursor: pointer;
 }
 
 .details-container {
     max-height: 19rem;
     overflow-y: auto;
+}
+
+.trash-icon {
+    color: red;
+}
+
+.popup-member {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.delete-members {
+    margin: 0.5rem 0;
+    border-radius: 10rem;
+    display: flex;
+    padding: 0.6rem 0.5rem 0.4rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-off {
+    border: 1px solid grey;
+}
+
+.delete-on {
+    border: 1px solid red;
+    background: red;
+    color: white;
 }

@@ -3,7 +3,7 @@ import './grid.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faStar } from '@fortawesome/free-solid-svg-icons';
 
-const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, info, vote, numOfMembers, openPopup}) => {
+const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, info, vote, numOfMembers, seeMembers}) => {
     const [selected, setSelected] = useState(availability[index]);
     const [tapped, setTapped] = useState(false);
     const [voteComplete, setVoteComplete] = useState(false);
@@ -14,14 +14,15 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
         }
     }, [info, numOfMembers])
 
-    const showTimeDetails = () => {
-        openPopup(info.members, info.votes);
+    const showTimeDetails = (timeSlot) => {
+        selectVote(timeSlot);
+        seeMembers(info.members, info.votes);
         console.log(info.members);
     }
 
-    const handelDoubleTap = (timeSlot) => {
+    const handelDoubleTap = () => {
         if (tapped) {
-            selectVote(timeSlot);
+            console.log("double tapped");
         }
         setTapped(true);
         setTimeout(() => {
@@ -41,7 +42,7 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
     else {
         return (
             <div style={{boxShadow:  parseInt(vote) === index ? 'inset 0px 0px 5px 0px #3f00ff' : ''}} className="timeslot-container">
-                <div style={{background: voteComplete ? 'black' : '', color: voteComplete ? 'white' : ''}} className={`${info.color} timeslot`} onClick={() => {showTimeDetails(); handelDoubleTap(index)}}>
+                <div style={{background: voteComplete ? 'black' : '', color: voteComplete ? 'white' : ''}} className={`${info.color} timeslot`} onClick={() => {showTimeDetails(index); handelDoubleTap()}}>
                     {/* {info.members.length > 0 ? <div className="timeslot-members"><span><FontAwesomeIcon icon={faUser} /></span>{info.members.length}</div> : ''} */}
                     {info.votes.length > 0 ? <div className="timeslot-votes"><span><FontAwesomeIcon icon={faStar} /></span>{info.votes.length}</div> : ''}
                     {/* {vote == index ? vote : ''} */}

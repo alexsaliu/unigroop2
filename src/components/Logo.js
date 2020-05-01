@@ -5,6 +5,7 @@ const Logo = ({loading}) => {
 
     return (
         <div className={loading ? "logo spin" : 'logo'}>
+            <div className="logo-shadow"></div>
             <div className="logo-line green"></div>
             <div className="logo-line blue"></div>
             <div className="logo-line yellow"></div>

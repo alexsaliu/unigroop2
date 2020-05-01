@@ -42,6 +42,7 @@ button.generate-name {
 
 .error {
     color: red;
+    font-size: 0.8rem;
 }
 
 @media (max-width: 576px) {

@@ -75,8 +75,12 @@ const Home = () => {
 
     return (
         <div className="home">
-            <div className="logo-container"><Logo loading={loading} /></div>
-            <h1>Unimeets</h1>
+            <div className="home-background"></div>
+            <div className="home-title-container">
+                <div className="logo-container"><Logo loading={loading} /></div>
+                <h1>Unimeets</h1>
+                <p className="tagline">Find a time that suits everyone</p>
+            </div>
             <div className="home-form">
                 {warning1 ? <div className="error">{warning1}</div> : ''}
                 <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Your Name" />
