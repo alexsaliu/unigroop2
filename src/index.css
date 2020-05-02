@@ -16,6 +16,7 @@
     --blue: #75cdff;
     --yellow: #fff966;
     --red: #ff8e8e;
+    --theme: #46eb60;
 }
 
 * {
@@ -51,7 +52,7 @@ button {
 
 input:focus, input:active {
     outline: none;
-    box-shadow: 0px 0px 4px 0px #75cdff;
+    box-shadow: 0px 0px 4px 0px var(--theme);
     border: 1px solid transparent;
 }
 

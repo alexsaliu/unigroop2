@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './grid.css';
 import './name.css';
+import '../home.css';
 import Grid from './Grid.js';
 import Logo from './Logo.js';
 import { randomNameGenerator } from '../helpers.js';
@@ -8,6 +9,8 @@ import {
     checkGroupRequest,
     joinGroupRequest
 } from '../requests.js';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 const Name = () => {
     const [groupLink, setGroupLink] = useState("");
@@ -110,11 +113,14 @@ const Name = () => {
                 <div className="name-form">
                     <div className="name-title">Joining: &nbsp;<span>{groupLink}</span></div>
                     {privateGroup ?
-                        <input onChange={(e) => setNameInput(e.target.value)} type="text" placeholder="Name" /> :
+                        <div className="home-input-container">
+                            <div className="input-icon"><FontAwesomeIcon icon={faUser} /></div>
+                            <input className="home-input" onChange={(e) => setNameInput(e.target.value)} type="text" placeholder="Your Name" />
+                        </div> :
                         <button className="main-btn generate-name" onClick={() => generateName()}>{!nameInput ? 'Generate Name' : nameInput}</button>
                     }
-                    {warning ? <div className="error">{warning}</div> : ''}
-                    <button className="main-btn" onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>
+                    <button className="submit-btn" onClick={() => handelSettingName(groupLink, nameInput, privateGroup)}>Submit Name</button>
+                    {warning ? <div className="error name-error">{warning}</div> : ''}
                 </div>
             </div>
         );

@@ -3,7 +3,7 @@ import '../home.css';
 import Logo from './Logo.js';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faSignInAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUsers, faSignInAlt, faLink, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import {
     checkGroupRequest,
@@ -17,6 +17,7 @@ const Home = () => {
     const [warning2, setWarning2] = useState("");
     const [privateGroup, setPrivateGroup] = useState(true);
     const [loading, setLoading] = useState(false);
+    const [creatingGroup, setCreatingGroup] = useState(true);
 
     useEffect(() => {
         if (!localStorage.getItem("groups")) {
@@ -82,6 +83,50 @@ const Home = () => {
                 <p className="tagline">Find a time that suits everyone</p>
             </div>
             <div className="home-form">
+                <div className="main-btn-container">
+                    <button className={creatingGroup ? "main-btn selected-button": "main-btn"} onClick={() => setCreatingGroup(true)}>
+                        <div className="signin-icon"><FontAwesomeIcon icon={faUsers} /></div>
+                        Create<br/>Group
+                    </button>
+                    <button className={creatingGroup ? "main-btn": "main-btn selected-button"} onClick={() => setCreatingGroup(false)}>
+                        <div className="users-icon"><FontAwesomeIcon icon={faSignInAlt} /></div>
+                        Join<br/>Group
+                    </button>
+                </div>
+                <br/><br/>
+
+                {creatingGroup ?
+                    <div className="home-input-container">
+                        <div className="input-icon"><FontAwesomeIcon icon={faUser} /></div>
+                        <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Your Name" />
+                    </div> :
+                    <div className="home-input-container">
+                        <div className="input-icon"><FontAwesomeIcon icon={faLink} /></div>
+                        <input className="home-input" onChange={(e) => setGroupLink(e.target.value)} type="text" placeholder="your-group-link" />
+                    </div>
+                }
+                {warning1 ? <div className="error">{warning1}</div> : ''}
+                {warning2 ? <div className="error">{warning2}</div> : ''}
+                {creatingGroup
+                    ? <button className="submit-btn create-group" onClick={() => createGroup(userName, privateGroup)}>Create Group</button>
+                    : <button className="submit-btn join-group" onClick={() => checkGroup(groupLink)}>Join Group</button>
+                }
+
+                <div className="group-toggle-container">
+                    {creatingGroup ?
+                        <div className="group-toggle-container-inner">
+                            <div className="group-toggle-title">Private</div>
+                            <div onClick={() => setPrivateGroup(!privateGroup)} className="group-toggle">
+                                <div className={privateGroup ? "toggle-switch" : "toggle-switch toggle-right"}></div>
+                            </div>
+                        </div>
+                        : ''
+                    }
+                </div>
+
+
+            </div>
+            {/* <div className="home-form">
                 {warning1 ? <div className="error">{warning1}</div> : ''}
                 <input className="home-input" onChange={(e) => setUserName(e.target.value)} type="text" placeholder="Your Name" />
                 <button className="main-btn create-group" onClick={() => createGroup(userName, privateGroup)}>Create Group &nbsp;<div className="users-icon"><FontAwesomeIcon icon={faSignInAlt} /></div></button>
@@ -93,7 +138,7 @@ const Home = () => {
                 {warning2 ? <div className="error">{warning2}</div> : ''}
                 <input className="home-input" onChange={(e) => setGroupLink(e.target.value)} type="text" placeholder="your-group-link" />
                 <button className="main-btn join-group" onClick={() => checkGroup(groupLink)}>Join Group &nbsp;<div className="signin-icon"><FontAwesomeIcon icon={faUsers} /></div></button>
-            </div>
+            </div> */}
         </div>
     );
 }

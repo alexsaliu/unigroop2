@@ -5,15 +5,6 @@
     height: 100%;
 }
 
-.name-section input {
-    width: 100%;
-    border: 1px solid #e0e0e0;
-    padding: 0.5rem;
-    font-size: 1.2rem;
-    border-radius: 0.7rem;
-    margin: 1rem 0;
-}
-
 .name-title {
     font-size: 1.4rem;
     margin: 2rem 1rem 0.5rem;
@@ -21,7 +12,7 @@
 }
 
 .name-title span {
-    color: #11e232;
+    color: var(--theme);
 }
 
 .name-form {
@@ -37,12 +28,32 @@ button.generate-name {
     background: white;
     color: black;
     box-shadow: none;
-    border: 3px dashed #13e234;
+    border: 3px dashed var(--theme);
 }
 
 .error {
     color: red;
     font-size: 0.8rem;
+}
+
+.submit-btn {
+    width: 18rem;
+    box-shadow: 1px 1px 3px 0px lightgrey;
+    /* background: linear-gradient(20deg, black, #00000096); */
+    /* background: linear-gradient(20deg, #2be849, #76ff8c); */
+    border-radius: 10rem;
+    color: white;
+    font-weight: bold;
+    padding: 0.5rem;
+    padding-top: 0.6rem;
+    margin-top: 1rem;
+    border: 1px solid var(--theme);;
+    background: var(--theme);
+    font-size: 1rem;
+}
+
+.name-error {
+    margin-top: 0.5rem
 }
 
 @media (max-width: 576px) {

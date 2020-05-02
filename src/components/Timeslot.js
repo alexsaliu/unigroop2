@@ -41,7 +41,7 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
     }
     else {
         return (
-            <div style={{boxShadow:  parseInt(vote) === index ? 'inset 0px 0px 5px 0px #3f00ff' : ''}} className="timeslot-container">
+            <div style={parseInt(vote) === index ? {borderLeft: '2px solid grey', borderRight: '2px solid grey'} : {}} className="timeslot-container">
                 <div style={{background: voteComplete ? 'black' : '', color: voteComplete ? 'white' : ''}} className={`${info.color} timeslot`} onClick={() => {showTimeDetails(index); handelDoubleTap()}}>
                     {/* {info.members.length > 0 ? <div className="timeslot-members"><span><FontAwesomeIcon icon={faUser} /></span>{info.members.length}</div> : ''} */}
                     {info.votes.length > 0 ? <div className="timeslot-votes"><span><FontAwesomeIcon icon={faStar} /></span>{info.votes.length}</div> : ''}

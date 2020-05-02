@@ -15,7 +15,7 @@ import {
     removeMemberRequest
 } from '../requests.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faCommentDots, faUsers, faLink, faArrowLeft, faArrowRight, faStar, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faCommentDots, faUsers, faLink, faChevronCircleLeft, faChevronCircleRight, faStar, faCalendarDay } from '@fortawesome/free-solid-svg-icons';
 
 const api = 'http://localhost:3001';
 
@@ -180,6 +180,17 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         // setVoteMembers(votes);
     }
 
+    const formatMembers = (members, limit) => {
+        let endString = "";
+        if (members.length > limit) {
+            let remainingMembers = members.length - limit;
+            members = members.slice(0, limit);
+            endString = 'and ' + remainingMembers + ' more..'
+        }
+        members.join(', ');
+        return members + " " + endString;
+    }
+
     return (
         <div className="grid-container">
             <div className="grid-header">
@@ -194,14 +205,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                 <div className="members-icon" onClick={() => setMembersPopup(!membersPopup)}><FontAwesomeIcon icon={faUsers} /><span>{groupMembers.length}</span></div>
             </div>
 
-            <div className="timeslot-members">{timeslotMembers}</div>
-
-            {membersOpen ? <div className="members-container">
-                <div className="members">{groupMembers.map((member, i) =>
-                    <div key={i}>{member}{!privateGroup && !admin ? '' : <div onClick={() => removeMember(groupLink, member)} className="trash-icon"><FontAwesomeIcon icon={faTrash} /></div>}</div>
-                )}</div>
-                <div onClick={() => setMembersOpen(false)}>BACK</div>
-            </div> : ''}
+            <div className="timeslot-members">{formatMembers(timeslotMembers, 8)}</div>
 
             {membersPopup ?
                 <div className="details-box">
@@ -255,7 +259,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
             <div className="grid-footer">
                 <div className="footer-section">
                     <div className="switch-view-button footer-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
-                        <div>{groupScreen ? <FontAwesomeIcon icon={faArrowLeft} /> : <FontAwesomeIcon icon={faArrowRight} />}</div>
+                        <div>{groupScreen ? <FontAwesomeIcon icon={faChevronCircleLeft} /> : <FontAwesomeIcon icon={faChevronCircleRight} />}</div>
                         <div className="footer-text">View<br/>{groupScreen ? "Availability" : "Group"}</div>
                     </div>
                 </div>
@@ -267,7 +271,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                             <div className="footer-text">Update<br/>Vote</div>
                         </div>
                         : <div style={{color: updateAvailabilityReady ? '' : 'lightgrey'}} className="update-button availability footer-button" onClick={() => {setUpdateAvailabilityReady(false); updateAvailability(groupLink, userName, availability)}}>
-                            <div><FontAwesomeIcon icon={faCircle} /></div>
+                            <div><FontAwesomeIcon icon={faCalendarDay} /></div>
                             <div className="footer-text">Update<br/>Availability</div>
                         </div>
                     }

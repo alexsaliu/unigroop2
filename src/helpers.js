@@ -1,9 +1,9 @@
 const determineColor = (availableMembers, totalMembers) => {
     const percentage = availableMembers / totalMembers * 100;
     if (percentage === 0) return "";
-    if (percentage < 25) return "red";
-    if (percentage < 50) return "yellow";
-    if (percentage < 75) return "blue";
+    if (percentage <= 25) return "red";
+    if (percentage <= 50) return "yellow";
+    if (percentage <= 75) return "blue";
     return "green";
 }
 const prepareGridData = (link, name, info) => {
