@@ -22,6 +22,7 @@
     border-radius: 0 0 0 1.5rem;
     border-bottom: 1px solid lightgrey;
     padding: 0 0.5rem;
+    z-index: 0;
     /* background: linear-gradient(45deg, black, #000000ab); */
 }
 
@@ -55,6 +56,20 @@
     cursor: pointer;
 }
 
+.bounce {
+    animation: bounce 0.7s;
+}
+
+@keyframes bounce {
+    0% {font-size: 0.8rem}
+    20% {font-size: 1.4rem}
+    40% {font-size: 0.9rem}
+    55% {font-size: 1.1rem}
+    75% {font-size: 0.9rem}
+    100% {font-size: 1rem}
+
+}
+
 .group-link svg {
     color: var(--theme);
 }
@@ -64,6 +79,27 @@
     z-index: -1;
     border: none;
     font-size: 0.5rem;
+    color: white;
+}
+
+.link-copied {
+    position: absolute;
+    background: #363636;
+    color: lightgrey;
+    padding: 0.4rem;
+    padding-top: 0.6rem;
+    font-size: 0.7rem;
+    border-radius: 0.3rem;
+    font-weight: bold;
+    z-index: -1;
+    animation: msgDown 2s;
+}
+
+@keyframes msgDown {
+    0% {transform: translateY(0rem)}
+    20% {transform: translateY(2.5rem)}
+    60% {transform: translateY(2.5rem); opacity: 1}
+    100% {transform: translateY(2.5rem); opacity: 0}
 }
 
 .timeslot-members {
@@ -87,6 +123,7 @@
 
 .members-icon {
     font-size: 1.2rem;
+    /* color: var(--theme); */
 }
 
 .members-icon span {
@@ -280,6 +317,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border-bottom: 0.5px solid #ebebeb;
 }
 
 .delete-members {
@@ -299,4 +337,10 @@
     border: 1px solid red;
     background: red;
     color: white;
+}
+
+@media (min-width: 576px) {
+    .grid-footer {
+        border: none;
+    }
 }

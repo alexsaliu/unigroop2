@@ -16,7 +16,8 @@
     --blue: #75cdff;
     --yellow: #fff966;
     --red: #ff8e8e;
-    --theme: #46eb60;
+    --theme: #ff8e8e;
+    /* --theme: #46eb60; */
 }
 
 * {
@@ -39,10 +40,11 @@ body, html, #root, .App, #grid {
 #grid {
     display: flex;
     justify-content: center;
+    max-width: 800px;
 }
 
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 button {
@@ -68,7 +70,7 @@ button:focus, button:active {
     color: red;
 }
 
-@media {max-width: 768px} {
+/* @media {max-width: 768px} {
     html {
         font-size: 12px;
     }
@@ -83,5 +85,12 @@ button:focus, button:active {
 @media {min-width: 1051px} {
     html {
         font-size: 16px;
+    }
+} */
+
+@media (min-width: 567px) {
+    .App {
+        display: flex;
+        justify-content: center;
     }
 }

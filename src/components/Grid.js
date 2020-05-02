@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import shortid from "shortid";
 import socketIOClient from 'socket.io-client';
 import './grid.css';
 import Timeslot from './Timeslot.js';
@@ -35,11 +36,12 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [loading, setLoading] = useState(false);
     const [warning, setWarning] = useState("");
     const [membersPopup, setMembersPopup] = useState(false);
-    const [voteMembers, setVoteMembers] = useState([]);
     const [updateAvailabilityReady, setUpdateAvailabilityReady] = useState(false);
     const [updateVoteReady, setUpdateVoteReady] = useState(false);
     const [timeslotMembers, setTimeslotMembers] = useState([]);
     const [deleteMembers, setDeleteMembers] = useState(false);
+    const [textCopied, setTextCopied] = useState(false);
+    const [bounce, setBounce] = useState(false);
 
     const textAreaRef = useRef(null);
 
@@ -135,36 +137,45 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     }
 
     const updateAvailability = async (link, name, userAvailability) => {
-        userAvailability = userAvailability.join('');
-        setLoading(true);
-        const update = await updateAvailabilityRequest(link, name, userAvailability);
-        setLoading(false);
-        if (update.success === 'error') {
-            setWarning("There was an error updating your availability");
-            setUpdateAvailabilityReady(true);
+        if (updateAvailabilityReady) {
+            userAvailability = userAvailability.join('');
+            setLoading(true);
+            const update = await updateAvailabilityRequest(link, name, userAvailability);
+            setLoading(false);
+            if (update.success === 'error') {
+                setWarning("There was an error updating your availability");
+                setUpdateAvailabilityReady(true);
+            }
+            else {
+                setWarning("");
+                emitUpdate();
+                setUpdateAvailabilityReady(false)
+                console.log("Update: ", update);
+            }
         }
-        else {
-            setWarning("");
-            emitUpdate();
-        }
-        console.log("Update: ", update);
     }
 
     const updateVote = async (link, name, vote) => {
-        setLoading(true);
-        const updatedVote = await updateVoteRequest(link, name, vote);
-        setLoading(false);
-        if (updatedVote.success === 'error') {
-            setWarning("There was an error updating your vote");
-            setUpdateVoteReady(true);
-        } else {
-            setWarning("");
-            emitUpdate();
+        if (updateVoteReady) {
+            setLoading(true);
+            const updatedVote = await updateVoteRequest(link, name, vote);
+            setLoading(false);
+            if (updatedVote.success === 'error') {
+                setWarning("There was an error updating your vote");
+                setUpdateVoteReady(true);
+            } else {
+                setWarning("");
+                emitUpdate();
+                setUpdateVoteReady(!updateVoteReady);
+                console.log("updatedVote: ", updatedVote);
+            }
         }
-        console.log("updatedVote: ", updatedVote);
     }
 
     const toggleScreens = (link, toggle) => {
+        if (groupScreen) {
+            setTimeslotMembers([]);
+        }
         setScreen(link, !toggle);
         setGroupScreen(!toggle);
     }
@@ -172,12 +183,16 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const selectLink = () => {
         textAreaRef.current.select();
         document.execCommand('copy');
+        setTextCopied(true);
+        setBounce(true);
+        setTimeout(() => {
+            setTextCopied(false);
+            setBounce(false);
+        }, 2000)
     }
 
     const seeMembers = (members, votes) => {
-        // setDetailsPopup(!detailsPopup);
         setTimeslotMembers(members);
-        // setVoteMembers(votes);
     }
 
     const formatMembers = (members, limit) => {
@@ -191,6 +206,11 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         return members + " " + endString;
     }
 
+    const generateKey = () => {
+        const key = shortid.generate();
+        return key;
+    }
+
     return (
         <div className="grid-container">
             <div className="grid-header">
@@ -199,7 +219,8 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                         <Logo loading={loading} />
                     </div>
                 </a>
-                <div onClick={() => selectLink()} className="group-link">
+                <div key={generateKey()} onClick={() => selectLink()} className={bounce ? "group-link bounce" : "group-link"}>
+                    {textCopied ? <div class="link-copied">Link Copied</div> : ''}
                      <textarea readOnly ref={textAreaRef} value={`${window.location}`} />{groupLink} &nbsp; <FontAwesomeIcon icon={faLink} />
                 </div>
                 <div className="members-icon" onClick={() => setMembersPopup(!membersPopup)}><FontAwesomeIcon icon={faUsers} /><span>{groupMembers.length}</span></div>
@@ -236,7 +257,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
             </div>
             <div className="grid">
                 <div className="grid-times">
-                    {['8', '', '9', '', '10', '', '11', '', '12', '', '1', '', '2', '', '3', '', '4', '', '5', '', '6', '', '7']
+                    {['8am', '', '9', '', '10', '', '11', '', '12', '', '1', '', '2', '', '3', '', '4', '', '5', '', '6', '', '7']
                     .map((item, i) => <div key={i}>{item}</div>)
                     }
                 </div>
@@ -266,11 +287,11 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
 
                 <div className="footer-section">
                     {groupScreen
-                        ? <div style={{color: updateVoteReady ? '' : 'lightgrey'}} className="update-button vote footer-button" onClick={() => {setUpdateVoteReady(false); updateVote(groupLink, userName, vote)}}>
+                        ? <div style={{color: updateVoteReady ? '' : 'lightgrey'}} className="update-button vote footer-button" onClick={() => updateVote(groupLink, userName, vote)}>
                             <div><FontAwesomeIcon icon={faStar} /></div>
                             <div className="footer-text">Update<br/>Vote</div>
                         </div>
-                        : <div style={{color: updateAvailabilityReady ? '' : 'lightgrey'}} className="update-button availability footer-button" onClick={() => {setUpdateAvailabilityReady(false); updateAvailability(groupLink, userName, availability)}}>
+                        : <div style={{color: updateAvailabilityReady ? '' : 'lightgrey'}} className="update-button availability footer-button" onClick={() => updateAvailability(groupLink, userName, availability)}>
                             <div><FontAwesomeIcon icon={faCalendarDay} /></div>
                             <div className="footer-text">Update<br/>Availability</div>
                         </div>
