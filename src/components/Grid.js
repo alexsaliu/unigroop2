@@ -18,8 +18,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faCommentDots, faUsers, faLink, faChevronCircleLeft, faChevronCircleRight, faStar, faCalendarDay } from '@fortawesome/free-solid-svg-icons';
 
-// const api = 'http://localhost:3001';
-const api = 'https://unimeetsapi.herokuapp.com';
+const api = 'http://localhost:3001';
+// const api = 'https://unimeetsapi.herokuapp.com';
 
 // Socket io connection with server
 const socket = socketIOClient(api);

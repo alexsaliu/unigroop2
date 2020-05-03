@@ -34,6 +34,7 @@ const Home = () => {
     const checkGroup = async (link) => {
         if (link.length === 14 && (link.split('-').length === 3 || link.split(' ').length === 3)) {
             setWarning("");
+            link = link.toLowerCase();
             link = formatLink(link);
             setLoading(true);
             const check = await checkGroupRequest(link);
@@ -50,7 +51,7 @@ const Home = () => {
             }
         }
         else {
-            setWarning("Your group link must me three 4 letter words");
+            setWarning("Your group link must be three 4 letter words");
         }
     }
 
