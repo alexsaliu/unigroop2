@@ -42,6 +42,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     const [deleteMembers, setDeleteMembers] = useState(false);
     const [textCopied, setTextCopied] = useState(false);
     const [bounce, setBounce] = useState(false);
+    const [canViewGroup, setCanViewGroup] = useState(false);
 
     const textAreaRef = useRef(null);
 
@@ -88,6 +89,11 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
                 userIsInGroup = true;
                 if (!privateGroup && info[i].admin) setAdmin(true);
                 const userAvailability = info[i].availability.split("").map(Number);
+                for (let i = 0, len = userAvailability.length; i < len; i++) {
+                    if (userAvailability[i]) {
+                        setCanViewGroup(true);
+                    }
+                }
                 setAvailability(userAvailability);
             }
         }
@@ -149,7 +155,8 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
             else {
                 setWarning("");
                 emitUpdate();
-                setUpdateAvailabilityReady(false)
+                setUpdateAvailabilityReady(false);
+                setCanViewGroup(true);
                 console.log("Update: ", update);
             }
         }
@@ -173,11 +180,13 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
     }
 
     const toggleScreens = (link, toggle) => {
-        if (groupScreen) {
-            setTimeslotMembers([]);
+        if (canViewGroup) {
+            if (groupScreen) {
+                setTimeslotMembers([]);
+            }
+            setScreen(link, !toggle);
+            setGroupScreen(!toggle);
         }
-        setScreen(link, !toggle);
-        setGroupScreen(!toggle);
     }
 
     const selectLink = () => {
@@ -279,7 +288,7 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
             {warning ? <div className="error">{warning}</div> : ''}
             <div className="grid-footer">
                 <div className="footer-section">
-                    <div className="switch-view-button footer-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
+                    <div style={canViewGroup ? {} : {color: 'lightgrey'}} className="switch-view-button footer-button" onClick={() => toggleScreens(groupLink, groupScreen)}>
                         <div>{groupScreen ? <FontAwesomeIcon icon={faChevronCircleLeft} /> : <FontAwesomeIcon icon={faChevronCircleRight} />}</div>
                         <div className="footer-text">View<br/>{groupScreen ? "Availability" : "Group"}</div>
                     </div>

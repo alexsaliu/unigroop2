@@ -9,9 +9,7 @@ const Timeslot = ({index, selectTime, groupScreen, availability, selectVote, inf
     const [voteComplete, setVoteComplete] = useState(false);
 
     useEffect(() => {
-        if (info.votes.length / numOfMembers > 0.66) {
-            setVoteComplete(true);
-        }
+        setVoteComplete((info.votes.length / numOfMembers > 0.66));
     }, [info, numOfMembers])
 
     const showTimeDetails = (timeSlot) => {
