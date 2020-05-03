@@ -13,6 +13,7 @@ import {
 const Home = () => {
     const [groupLink, setGroupLink] = useState("");
     const [userName, setUserName] = useState("");
+    const [warning, setWarning] = useState("");
     const [warning1, setWarning1] = useState("");
     const [warning2, setWarning2] = useState("");
     const [privateGroup, setPrivateGroup] = useState(true);
@@ -31,30 +32,34 @@ const Home = () => {
     }
 
     const checkGroup = async (link) => {
-        link = formatLink(link);
-        setLoading(true);
-        const check = await checkGroupRequest(link);
-        setLoading(false);
-        console.log(check);
-        if (check.success === 'error') {
-            setWarning1("");
-            setWarning2("There was an error checking your group");
-        }
-        else if (check.success) {
-            window.location = `/${link}`;
+        if (link.length === 14 && (link.split('-').length === 3 || link.split(' ').length === 3)) {
+            setWarning("");
+            link = formatLink(link);
+            setLoading(true);
+            const check = await checkGroupRequest(link);
+            setLoading(false);
+            console.log(check);
+            if (check.success === 'error') {
+                setWarning("There was an error checking your group");
+            }
+            else if (check.success) {
+                window.location = `/${link}`;
+            }
+            else {
+                setWarning("Group does not exist");
+            }
         }
         else {
-            setWarning1("");
-            setWarning2("Group does not exist");
+            setWarning("Your group link must me three 4 letter words");
         }
     }
 
     const createGroup = async (name, privateGroup) => {
         if (userName.length < 2) {
-            setWarning2("");
-            setWarning1("Name must be at least 2 characters");
+            setWarning("Name must be at least 2 characters");
         }
         else {
+            setWarning("");
             setLoading(true);
             const group = await createGroupRequest(name, privateGroup);
             setLoading(false);
@@ -68,8 +73,7 @@ const Home = () => {
                 window.location = group.group_link;
             }
             else {
-                setWarning2("");
-                setWarning1("There was an error creating your group");
+                setWarning("There was an error creating your group");
             }
         }
     }
@@ -93,7 +97,10 @@ const Home = () => {
                         Join<br/>Group
                     </button>
                 </div>
+
                 <br/><br/>
+
+                {warning ? <div className="error">{warning}</div> : ''}
 
                 {creatingGroup ?
                     <div className="home-input-container">
@@ -105,8 +112,6 @@ const Home = () => {
                         <input className="home-input" onChange={(e) => setGroupLink(e.target.value)} type="text" placeholder="your-group-link" />
                     </div>
                 }
-                {warning1 ? <div className="error">{warning1}</div> : ''}
-                {warning2 ? <div className="error">{warning2}</div> : ''}
                 {creatingGroup
                     ? <button className="submit-btn create-group" onClick={() => createGroup(userName, privateGroup)}>Create Group</button>
                     : <button className="submit-btn join-group" onClick={() => checkGroup(groupLink)}>Join Group</button>
