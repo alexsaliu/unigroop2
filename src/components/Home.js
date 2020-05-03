@@ -98,7 +98,7 @@ const Home = () => {
                     </button>
                 </div>
 
-                <br/><br/>
+                <br/>
 
                 {warning ? <div className="error">{warning}</div> : ''}
 
