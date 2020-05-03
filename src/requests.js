@@ -1,5 +1,5 @@
-const api = 'http://localhost:3001';
-// const api = 'https://unimeetsapi.herokuapp.com';
+// const api = 'http://localhost:3001';
+const api = 'https://unimeetsapi.herokuapp.com';
 
 const checkGroupRequest = (link) => {
     return fetch(`${api}/check-group`, {
