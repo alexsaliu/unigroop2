@@ -67,7 +67,6 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         })
 
         socket.on(`update`, (info) => {
-            console.log("MESSAGE: ", info);
             renderGrid(groupLink, userName, info);
         })
     }, [])
@@ -106,7 +105,6 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
 
     const removeUser = (name) => {
         let groups = JSON.parse(localStorage.getItem("groups"));
-        console.log("REMOVED BITCH");
         delete groups[groupLink];
         localStorage.setItem("groups", JSON.stringify(groups));
         window.location = '/';
@@ -114,7 +112,6 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
 
     const removeMember = async (link, member, confirmation) => {
         if (confirmation) {
-            console.log("Not saftey");
             setLoading(true);
             const response = await removeMemberRequest(link, member);
             setLoading(false);
@@ -135,7 +132,6 @@ const Grid = ({groupLink, userName, screen, privateGroup}) => {
         let currentAvailability = availability;
         currentAvailability[index] = !currentAvailability[index] ? 1 : 0;
         setAvailability(currentAvailability);
-        console.log(currentAvailability);
     }
 
     const selectVote = async (vote) => {
