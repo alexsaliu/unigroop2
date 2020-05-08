@@ -1,8 +1,5 @@
 .name-section {
-    max-width: 500px;
-    position: relative;
-    margin: auto;
-    height: 100%;
+    width: 100%;
 }
 
 .name-title {
@@ -28,7 +25,11 @@ button.generate-name {
     background: white;
     color: black;
     box-shadow: none;
+    margin: auto;
+    width: 18rem;
+    font-size: 2rem;
     border: 3px dashed var(--theme);
+    display: block;
 }
 
 .error {
